@@ -1,11 +1,10 @@
 package com.minimax.minimax.connect4;
 
 public class Table {
-    //create a table
     public final int ROWS;
     public final int COLUMNS;
     private final char[][] table;
-    //create constructor
+
     public Table(int row, int column){
         this.ROWS = row;
         this.COLUMNS = column;
@@ -13,13 +12,39 @@ public class Table {
     }
 
     public Position get(int i, int j) {
+        if(!isValidPosition(i,j))
+            throw new IllegalArgumentException("Illegal position: " + i + "," + j);
         return new Position(i, j);
     }
-    private boolean isValidPosition(int i, int j){
-        return i >= 0 && i < ROWS && j >= 0 && j < COLUMNS;
-    }
-    public class Position{
 
+    private boolean isValidPosition(int i, int j){
+        return i >= 0 && i < ROWS && isValidColumn(j);
+    }
+    private boolean isValidColumn(int j){
+        return j >= 0 && j < COLUMNS;
+    }
+
+    public void placePlayer1AtColumn(int column) {
+        placeAtColumn(column, Position.STATE.player1);
+    }
+    public void placePlayer2AtColumn(int column) {
+        placeAtColumn(column, Position.STATE.player2);
+    }
+
+    private void placeAtColumn(int column, Position.STATE player) {
+        if(!isValidColumn(column))
+            throw new IllegalArgumentException("Illegal column: " + column);
+
+        for(int row = 0; row < ROWS; row++)
+            if(get(row, column).isEmpty()) {
+                get(row, column).place(player);
+                return;
+            }
+
+        throw new IllegalArgumentException("Column " + column + " is full");
+    }
+
+    public class Position{
         enum STATE{
             empty((char) 0), player1('X'), player2('O');
             private final char state;
@@ -30,23 +55,22 @@ public class Table {
                 return state;
             }
         }
+
         private final char state;
         private final int row;
         private final int column;
         public Position(int i, int j) {
-            if(i < 0 || i >= ROWS || j < 0 || j >= COLUMNS)
-                throw new IllegalArgumentException("Illegal position: " + i + "," + j);
             this.row = i;
             this.column = j;
             this.state = table[i][j];
         }
 
         public void placePlayer1(){
-           placeToken(row, column, STATE.player1);
+           place(STATE.player1);
         }
 
         public void placePlayer2() {
-            placeToken(row, column, STATE.player2);
+            place(STATE.player2);
         }
 
         public boolean isEmpty(){
@@ -61,10 +85,10 @@ public class Table {
             return state == STATE.player2.getState();
         }
 
-
-        private void placeToken(int i, int j, Position.STATE state) {
-            table[i][j] = state.getState();
+        private void place(Position.STATE state) {
+            table[row][column] = state.getState();
         }
     }
+
 
 }

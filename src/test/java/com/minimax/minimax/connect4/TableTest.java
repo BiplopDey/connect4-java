@@ -7,10 +7,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class TableTest {
     Table table;
-
+    Table smallTable;
     @BeforeEach
     void setUp() {
         table = new Table(6,7);
+        smallTable = new Table(2,2);
     }
 
     @Test
@@ -45,4 +46,38 @@ class TableTest {
 
         assertEquals("Illegal position: 7,0", exception.getMessage());
     }
+
+    @Test
+    void cant_place_token_in_invalid_column(){
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> table.placePlayer1AtColumn(7));
+        assertEquals("Illegal column: 7", exception.getMessage());
+    }
+
+    @Test
+    void can_place_token_in_valid_column(){
+        table.placePlayer1AtColumn(0);
+        assertTrue(table.get(0,0).isPlayer1());
+        assertFalse(table.get(1,0).isPlayer1());
+        table.placePlayer1AtColumn(0);
+        assertTrue(table.get(0,0).isPlayer1());
+        assertTrue(table.get(1,0).isPlayer1());
+
+        table.placePlayer2AtColumn(0);
+        assertTrue(table.get(2,0).isPlayer2());
+        table.placePlayer2AtColumn(1);
+        assertTrue(table.get(0,1).isPlayer2());
+    }
+
+    @Test
+    void cant_place_token_in_column_full(){
+        smallTable = new Table(2,2);
+        smallTable.placePlayer1AtColumn(1);
+        smallTable.placePlayer1AtColumn(1);
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> smallTable.placePlayer1AtColumn(1));
+        assertEquals("Column 1 is full", exception.getMessage());
+    }
+
+
+
 }
