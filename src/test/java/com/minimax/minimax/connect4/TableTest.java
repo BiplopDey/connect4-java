@@ -11,7 +11,6 @@ class TableTest {
     @BeforeEach
     void setUp() {
         table = new Table(6,7);
-        smallTable = new Table(2,2);
     }
 
     @Test
@@ -78,6 +77,15 @@ class TableTest {
         assertEquals("Column 1 is full", exception.getMessage());
     }
 
+    @Test
+    void is_connect_4_by_column(){
+        smallTable = new Table(4,4);
+        smallTable.placePlayer1AtColumn(0);
+        smallTable.placePlayer1AtColumn(0);
+        smallTable.placePlayer1AtColumn(0);
+        smallTable.placePlayer1AtColumn(0);
 
+        assertTrue(smallTable.isConnect4());
+    }
 
 }

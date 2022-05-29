@@ -11,15 +11,16 @@ public class Table {
         table = new char[row][column];
     }
 
-    public Position get(int i, int j) {
-        if(!isValidPosition(i,j))
-            throw new IllegalArgumentException("Illegal position: " + i + "," + j);
-        return new Position(i, j);
+    public Position get(int row, int column){
+        if(!isValidPosition(row, column))
+            throw new IllegalArgumentException("Illegal position: " + row + "," + column);
+        return new Position(row, column, this);
     }
 
     private boolean isValidPosition(int i, int j){
         return i >= 0 && i < ROWS && isValidColumn(j);
     }
+
     private boolean isValidColumn(int j){
         return j >= 0 && j < COLUMNS;
     }
@@ -43,52 +44,25 @@ public class Table {
 
         throw new IllegalArgumentException("Column " + column + " is full");
     }
+    /*
+    // get a particular column
+    public Column getColumn(int column) {
+        if(!isValidColumn(column))
+            throw new IllegalArgumentException("Illegal column: " + column);
 
-    public class Position{
-        enum STATE{
-            empty((char) 0), player1('X'), player2('O');
-            private final char state;
-            STATE(char state){
-                this.state = state;
-            }
-            public char getState(){
-                return state;
-            }
-        }
-
-        private final char state;
-        private final int row;
-        private final int column;
-        public Position(int i, int j) {
-            this.row = i;
-            this.column = j;
-            this.state = table[i][j];
-        }
-
-        public void placePlayer1(){
-           place(STATE.player1);
-        }
-
-        public void placePlayer2() {
-            place(STATE.player2);
-        }
-
-        public boolean isEmpty(){
-            return state == STATE.empty.getState();
-        }
-
-        public boolean isPlayer1(){
-            return state == STATE.player1.getState();
-        }
-
-        public boolean isPlayer2(){
-            return state == STATE.player2.getState();
-        }
-
-        private void place(Position.STATE state) {
-            table[row][column] = state.getState();
-        }
+        Column col = new Column();
+        for(int row = 0; row < ROWS; row++)
+            col.add(get(row, column));
+        return col;
+    }
+    */
+    public boolean isConnect4() {
+        return true;
     }
 
+    //get table
+    public char[][] getTable() {
+        return table;
+    }
 
 }
