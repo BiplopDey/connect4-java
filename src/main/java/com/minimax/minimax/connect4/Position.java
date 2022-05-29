@@ -1,7 +1,7 @@
 package com.minimax.minimax.connect4;
 public class Position{
     enum STATE{
-        empty((char) 0), player1('X'), player2('O');
+        EMPTY((char) 0), PLAYER_1('X'), PLAYER_2('O');
         private final char state;
         STATE(char state){
             this.state = state;
@@ -21,25 +21,28 @@ public class Position{
     }
 
     public void placePlayer1(){
-        place(STATE.player1);
+        place(STATE.PLAYER_1);
     }
 
     public void placePlayer2() {
-        place(STATE.player2);
+        place(STATE.PLAYER_2);
     }
 
     public boolean isEmpty(){
-        return table[row][column] == STATE.empty.getState();
+        return table[row][column] == STATE.EMPTY.getState();
     }
 
     public boolean isPlayer1(){
-        return table[row][column] == STATE.player1.getState();
+        return table[row][column] == STATE.PLAYER_1.getState();
     }
 
     public boolean isPlayer2(){
-        return table[row][column] == STATE.player2.getState();
+        return table[row][column] == STATE.PLAYER_2.getState();
     }
 
+    protected char getValue(){
+        return table[row][column];
+    }
     protected void place(Position.STATE state) {
         table[row][column] = state.getState();
     }

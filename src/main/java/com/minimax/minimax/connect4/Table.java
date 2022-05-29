@@ -17,6 +17,47 @@ public class Table {
         return new Position(row, column, this);
     }
 
+
+
+    private void placeAtColumn(int column, Position.STATE player) {
+        if(!isValidColumn(column))
+            throw new IllegalArgumentException("Illegal column: " + column);
+        Column columnObj = getColumn(column);
+        if(columnObj.isFull())
+            throw new IllegalArgumentException("Column " + column + " is full");
+        updateColumn(column, columnObj.put(player));
+    }
+
+    private void updateColumn(int column, Column columnObj) {
+        for(int row = 0; row < ROWS; row++)
+            table[row][column] = columnObj.getList().get(row).getValue();
+    }
+
+    private Column getColumn(int column) {
+        if(!isValidColumn(column))
+            throw new IllegalArgumentException("Illegal column: " + column);
+        return new Column(column, this);
+    }
+
+    public boolean isConnect4() {
+        for(int column = 0; column < COLUMNS; column++)
+            if(getColumn(column).isConnect4())
+                    return true;
+        return false;
+    }
+
+    public char[][] getTable() {
+        return table;
+    }
+
+    public void placePlayer1AtColumn(int column) {
+        placeAtColumn(column, Position.STATE.PLAYER_1);
+    }
+
+    public void placePlayer2AtColumn(int column) {
+        placeAtColumn(column, Position.STATE.PLAYER_2);
+    }
+
     private boolean isValidPosition(int i, int j){
         return i >= 0 && i < ROWS && isValidColumn(j);
     }
@@ -24,45 +65,4 @@ public class Table {
     private boolean isValidColumn(int j){
         return j >= 0 && j < COLUMNS;
     }
-
-    public void placePlayer1AtColumn(int column) {
-        placeAtColumn(column, Position.STATE.player1);
-    }
-    public void placePlayer2AtColumn(int column) {
-        placeAtColumn(column, Position.STATE.player2);
-    }
-
-    private void placeAtColumn(int column, Position.STATE player) {
-        if(!isValidColumn(column))
-            throw new IllegalArgumentException("Illegal column: " + column);
-
-        for(int row = 0; row < ROWS; row++)
-            if(get(row, column).isEmpty()) {
-                get(row, column).place(player);
-                return;
-            }
-
-        throw new IllegalArgumentException("Column " + column + " is full");
-    }
-    /*
-    // get a particular column
-    public Column getColumn(int column) {
-        if(!isValidColumn(column))
-            throw new IllegalArgumentException("Illegal column: " + column);
-
-        Column col = new Column();
-        for(int row = 0; row < ROWS; row++)
-            col.add(get(row, column));
-        return col;
-    }
-    */
-    public boolean isConnect4() {
-        return true;
-    }
-
-    //get table
-    public char[][] getTable() {
-        return table;
-    }
-
 }

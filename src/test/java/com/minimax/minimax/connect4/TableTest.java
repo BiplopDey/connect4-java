@@ -88,4 +88,16 @@ class TableTest {
         assertTrue(smallTable.isConnect4());
     }
 
+    @Test
+    void is_not_connect_4_by_column(){
+        smallTable = new Table(4,4);
+        smallTable.placePlayer1AtColumn(0);
+        smallTable.placePlayer1AtColumn(0);
+        smallTable.placePlayer1AtColumn(0);
+        smallTable.placePlayer1AtColumn(1);
+
+        assertFalse(smallTable.isConnect4());
+    }
+
+
 }
