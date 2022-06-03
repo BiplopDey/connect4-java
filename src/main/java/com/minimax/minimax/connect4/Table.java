@@ -1,6 +1,5 @@
 package com.minimax.minimax.connect4;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -72,5 +71,15 @@ public class Table {
 
     private boolean isValidColumn(int j){
         return j >= 0 && j < COLUMNS;
+    }
+
+    public List<PositionPair> getPositionsOfConnect4() {
+        if(!isConnect4())
+            throw new IllegalStateException("No connect 4 found");
+
+        return getColumnList().stream()
+                .filter(Column::isConnect4)
+                .map(Column::getPositionPair)
+                .collect(Collectors.toList());
     }
 }

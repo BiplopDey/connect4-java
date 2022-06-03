@@ -57,4 +57,33 @@ class ColumnTest {
         assertFalse(column.isConnect4());
     }
 
+    @Test
+    void get_positionPair_of_connect_4() {
+        var table = new Table(6, 7);
+        var column = new Column(1, table);
+        column.put(Position.STATE.PLAYER_1);
+        column.put(Position.STATE.PLAYER_2);
+        column.put(Position.STATE.PLAYER_1);
+        column.put(Position.STATE.PLAYER_1);
+        column.put(Position.STATE.PLAYER_1);
+        column.put(Position.STATE.PLAYER_1);
+
+        var positionPair = new PositionPair(new Position(2,1,table),
+                new Position(5,1,table));
+        assertEquals(positionPair, column.getPositionPair());
+    }
+
+    @Test
+    void cant_get_positionPair_of_connect_4_and_throws_IllegalStateException() {
+        var table = new Table(6, 7);
+        var column = new Column(1, table);
+        column.put(Position.STATE.PLAYER_1);
+        column.put(Position.STATE.PLAYER_2);
+        column.put(Position.STATE.PLAYER_1);
+        column.put(Position.STATE.PLAYER_1);
+        column.put(Position.STATE.PLAYER_1);
+
+        Exception exception = assertThrows(IllegalStateException.class, () -> column.getPositionPair());
+        assertEquals("Column is not connect4", exception.getMessage());
+    }
 }

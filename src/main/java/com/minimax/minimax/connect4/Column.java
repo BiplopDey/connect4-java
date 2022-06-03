@@ -7,7 +7,7 @@ import java.util.stream.IntStream;
 
 public class Column {
     private final List<Position> list;
-
+    private PositionPair positionPair;
     public Column(int column, Table table){
         this.list = IntStream.range(0, table.ROWS)
                 .mapToObj(row -> table.get(row, column))
@@ -46,10 +46,18 @@ public class Column {
             Position p3 = list.get(i + 2);
             Position p4 = list.get(i + 3);
             if (areConnected(Position.STATE.PLAYER_1, p1, p2, p3, p4)
-                    || areConnected(Position.STATE.PLAYER_2, p1, p2, p3, p4))
+                    || areConnected(Position.STATE.PLAYER_2, p1, p2, p3, p4)){
+                positionPair = new PositionPair(p1, p4);
                 return true;
+            }
         }
         return false;
+    }
+
+    public PositionPair getPositionPair() {
+        if(!isConnect4())
+            throw new IllegalStateException("Column is not connect4");
+        return positionPair;
     }
 
     public static class ColumnFullException extends RuntimeException {
@@ -57,5 +65,4 @@ public class Column {
             super(message);
         }
     }
-
 }

@@ -104,5 +104,39 @@ class TableTest {
         assertFalse(smallTable.isConnect4());
     }
 
+    @Test
+    void cat_get_position_of_connect_4() {
+        smallTable = new Table(6, 4);
+        smallTable.placePlayer1AtColumn(0);
+        smallTable.placePlayer1AtColumn(0);
+        smallTable.placePlayer1AtColumn(0);
+        smallTable.placePlayer2AtColumn(0);
+
+        Exception exception = assertThrows(IllegalStateException.class,
+                () -> smallTable.getPositionsOfConnect4());
+        assertEquals("No connect 4 found", exception.getMessage());
+    }
+
+    @Test
+    void get_positions_of_connect_4(){
+        smallTable = new Table(6, 4);
+        smallTable.placePlayer2AtColumn(0);
+        smallTable.placePlayer1AtColumn(0);
+        smallTable.placePlayer1AtColumn(0);
+        smallTable.placePlayer1AtColumn(0);
+        smallTable.placePlayer1AtColumn(0);
+
+        smallTable.placePlayer2AtColumn(1);
+        smallTable.placePlayer1AtColumn(1);
+        smallTable.placePlayer1AtColumn(1);
+        smallTable.placePlayer1AtColumn(1);
+        smallTable.placePlayer1AtColumn(1);
+
+        assertEquals(2, smallTable.getPositionsOfConnect4().size());
+        var positionPair = new PositionPair(new Position(1,0, smallTable), new Position(4,0, smallTable));
+        var positionPair2 = new PositionPair(new Position(1,1, smallTable), new Position(4,1, smallTable));
+        assertEquals(positionPair, smallTable.getPositionsOfConnect4().get(0));
+        assertEquals(positionPair2, smallTable.getPositionsOfConnect4().get(1));
+    }
 
 }

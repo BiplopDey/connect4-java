@@ -1,4 +1,8 @@
 package com.minimax.minimax.connect4;
+
+import lombok.EqualsAndHashCode;
+
+@EqualsAndHashCode
 public class Position{
     enum STATE{
         EMPTY((char) 0), PLAYER_1('X'), PLAYER_2('O');
@@ -14,9 +18,9 @@ public class Position{
     private final char[][] table;
     private final int row;
     private final int column;
-    public Position(int i, int j,  Table table){
-        this.row = i;
-        this.column = j;
+    public Position(int row, int column, Table table){
+        this.row = row;
+        this.column = column;
         this.table = table.getTable();
     }
 
@@ -43,7 +47,13 @@ public class Position{
     protected char getValue(){
         return table[row][column];
     }
+
     protected void place(Position.STATE state) {
         table[row][column] = state.getState();
+    }
+
+    @Override
+    public String toString() {
+        return "Position(" + row + "," + column + ")";
     }
 }
