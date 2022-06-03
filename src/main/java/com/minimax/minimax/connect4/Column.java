@@ -2,18 +2,20 @@ package com.minimax.minimax.connect4;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class Column {
     private final List<Position> list;
 
     public Column(int column, Table table){
-        this.list = new ArrayList<>();
-        for(int row = 0; row < table.ROWS; row++)
-            list.add(table.get(row, column));
+        this.list = IntStream.range(0, table.ROWS)
+                .mapToObj(row -> table.get(row, column))
+                .collect(Collectors.toList());
     }
 
     public boolean isFull() {
-        return list.stream().filter(p -> p.isEmpty()).count() == 0;
+        return list.stream().noneMatch(Position::isEmpty);
     }
 
     public Column put(Position.STATE state) {
@@ -23,15 +25,37 @@ public class Column {
             return this;
             }
         }
-        throw new IllegalArgumentException("Column is full");
+        throw new ColumnFullException("Column is full");
     }
 
     public List<Position> getList() {
         return list;
     }
 
-    public boolean isConnect4() {
-        return list.stream().filter(p -> p.isPlayer1()).count() == 4 ||
-                list.stream().filter(p -> p.isPlayer2()).count() == 4;
+    private boolean areConnected(Position.STATE player, Position... positions) {
+        for(Position p : positions)
+            if(p.getValue() != player.getState())
+                return false;
+        return true;
     }
+
+    public boolean isConnect4() {
+        for(int i = 0; i < list.size() - 3; i++) {
+            Position p1 = list.get(i);
+            Position p2 = list.get(i + 1);
+            Position p3 = list.get(i + 2);
+            Position p4 = list.get(i + 3);
+            if (areConnected(Position.STATE.PLAYER_1, p1, p2, p3, p4)
+                    || areConnected(Position.STATE.PLAYER_2, p1, p2, p3, p4))
+                return true;
+        }
+        return false;
+    }
+
+    public static class ColumnFullException extends RuntimeException {
+        public ColumnFullException(String message) {
+            super(message);
+        }
+    }
+
 }

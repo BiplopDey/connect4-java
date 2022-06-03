@@ -1,5 +1,10 @@
 package com.minimax.minimax.connect4;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
 public class Table {
     public final int ROWS;
     public final int COLUMNS;
@@ -17,14 +22,12 @@ public class Table {
         return new Position(row, column, this);
     }
 
-
-
     private void placeAtColumn(int column, Position.STATE player) {
         if(!isValidColumn(column))
             throw new IllegalArgumentException("Illegal column: " + column);
         Column columnObj = getColumn(column);
         if(columnObj.isFull())
-            throw new IllegalArgumentException("Column " + column + " is full");
+            throw new Column.ColumnFullException("Column " + column + " is full");
         updateColumn(column, columnObj.put(player));
     }
 
@@ -39,11 +42,16 @@ public class Table {
         return new Column(column, this);
     }
 
+    private List<Column> getColumnList() {
+        return IntStream.range(0, COLUMNS)
+                .mapToObj(this::getColumn)
+                .collect(Collectors.toList());
+    }
+
     public boolean isConnect4() {
-        for(int column = 0; column < COLUMNS; column++)
-            if(getColumn(column).isConnect4())
-                    return true;
-        return false;
+        boolean isColumnConnect4 = getColumnList().stream()
+                .anyMatch(Column::isConnect4);
+        return isColumnConnect4;
     }
 
     public char[][] getTable() {

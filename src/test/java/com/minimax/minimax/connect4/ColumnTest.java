@@ -31,7 +31,7 @@ class ColumnTest {
     @Test
     void cant_put_and_throws_ColumnFullException() {
         column.put(Position.STATE.PLAYER_1).put(Position.STATE.PLAYER_1);
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> column.put(Position.STATE.PLAYER_2));
+        Exception exception = assertThrows(Column.ColumnFullException.class, () -> column.put(Position.STATE.PLAYER_2));
         assertEquals("Column is full", exception.getMessage());
     }
 
@@ -40,5 +40,21 @@ class ColumnTest {
         assertEquals(2, column.getList().size());
     }
 
+    @Test
+    void isConnect4_false_by_default() {
+        assertFalse(column.isConnect4());
+    }
+
+    @Test
+    void isConnect4_false(){
+        var table = new Table(6,7);
+        var column = new Column(1, table);
+        column.put(Position.STATE.PLAYER_1);
+        column.put(Position.STATE.PLAYER_1);
+        column.put(Position.STATE.PLAYER_2);
+        column.put(Position.STATE.PLAYER_1);
+        column.put(Position.STATE.PLAYER_1);
+        assertFalse(column.isConnect4());
+    }
 
 }

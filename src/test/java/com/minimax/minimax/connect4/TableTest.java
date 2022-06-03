@@ -40,20 +40,23 @@ class TableTest {
 
     @Test
     void place_token_in_illegal_position(){
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> table.get(7,0).placePlayer1());
-        assertThrows(IllegalArgumentException.class, () -> table.get(6,0).placePlayer1());
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> table.get(7,0).placePlayer1());
+        assertThrows(IllegalArgumentException.class,
+                () -> table.get(6,0).placePlayer1());
 
         assertEquals("Illegal position: 7,0", exception.getMessage());
     }
 
     @Test
     void cant_place_token_in_invalid_column(){
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> table.placePlayer1AtColumn(7));
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> table.placePlayer1AtColumn(7));
         assertEquals("Illegal column: 7", exception.getMessage());
     }
 
     @Test
-    void can_place_token_in_valid_column(){
+    void place_token_in_valid_column(){
         table.placePlayer1AtColumn(0);
         assertTrue(table.get(0,0).isPlayer1());
         assertFalse(table.get(1,0).isPlayer1());
@@ -73,12 +76,13 @@ class TableTest {
         smallTable.placePlayer1AtColumn(1);
         smallTable.placePlayer1AtColumn(1);
 
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> smallTable.placePlayer1AtColumn(1));
+        Exception exception = assertThrows(Column.ColumnFullException.class,
+                () -> smallTable.placePlayer1AtColumn(1));
         assertEquals("Column 1 is full", exception.getMessage());
     }
 
     @Test
-    void is_connect_4_by_column(){
+    void is_connect_4_by_column_only_player1(){
         smallTable = new Table(4,4);
         smallTable.placePlayer1AtColumn(0);
         smallTable.placePlayer1AtColumn(0);
@@ -90,11 +94,12 @@ class TableTest {
 
     @Test
     void is_not_connect_4_by_column(){
-        smallTable = new Table(4,4);
+        smallTable = new Table(6,4);
         smallTable.placePlayer1AtColumn(0);
         smallTable.placePlayer1AtColumn(0);
         smallTable.placePlayer1AtColumn(0);
-        smallTable.placePlayer1AtColumn(1);
+        smallTable.placePlayer2AtColumn(0);
+        smallTable.placePlayer1AtColumn(0);
 
         assertFalse(smallTable.isConnect4());
     }
