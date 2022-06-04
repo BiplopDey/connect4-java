@@ -1,18 +1,21 @@
 package com.minimax.minimax.connect4;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public class Table {
     public final int ROWS;
     public final int COLUMNS;
     private final char[][] table;
 
-    public Table(int row, int column){
-        this.ROWS = row;
-        this.COLUMNS = column;
-        table = new char[row][column];
+
+    public Table(int rows, int columns){
+        this.ROWS = rows;
+        this.COLUMNS = columns;
+        table = new char[rows][columns];
+
     }
 
     public Position get(int row, int column){
@@ -21,18 +24,35 @@ public class Table {
         return new Position(row, column, this);
     }
 
-    private void placeAtColumn(int column, Position.STATE player) {
-        if(!isValidColumn(column))
-            throw new IllegalArgumentException("Illegal column: " + column);
-        Column columnObj = getColumn(column);
+    private void placeAtColumn(int columnIndex, Position.STATE player) {
+        if(!isValidColumn(columnIndex))
+            throw new IllegalArgumentException("Illegal column: " + columnIndex);
+        Column columnObj = getColumn(columnIndex);
         if(columnObj.isFull())
-            throw new Column.ColumnFullException("Column " + column + " is full");
-        updateColumn(column, columnObj.put(player));
+            throw new Column.ColumnFullException("Column " + columnIndex + " is full");
+        columnObj.put(player);
     }
 
-    private void updateColumn(int column, Column columnObj) {
-        for(int row = 0; row < ROWS; row++)
-            table[row][column] = columnObj.getList().get(row).getValue();
+    public boolean isConnect4() {
+        return getAllTableLists().stream().anyMatch(TableList::isConnect4);
+    }
+
+    public List<PositionPair> getPositionsOfConnect4() {
+        if(!isConnect4())
+            throw new IllegalStateException("No connect 4 found");
+
+        return getAllTableLists().stream()
+                .filter(TableList::isConnect4)
+                .map(TableList::getPositionPair)
+                .collect(Collectors.toList());
+    }
+
+    private List<TableList> getAllTableLists() {
+        List<TableList> result = new ArrayList<>();
+        result.addAll(getAllColumns());
+        result.addAll(getAllRows());
+     //   result.addAll(getAllDiagonals());
+        return result;
     }
 
     private Column getColumn(int column) {
@@ -41,16 +61,25 @@ public class Table {
         return new Column(column, this);
     }
 
-    private List<Column> getColumnList() {
-        return IntStream.range(0, COLUMNS)
-                .mapToObj(this::getColumn)
-                .collect(Collectors.toList());
+    private List<Column> getAllColumns() {
+        return Column.getAll(this);
+    }
+/*
+    private Diagonal getDiagonal(int column){
+        if(!isValidColumn(column))
+            throw new IllegalArgumentException("Illegal column: " + column);
+        return new Diagonal(column, this);
     }
 
-    public boolean isConnect4() {
-        boolean isColumnConnect4 = getColumnList().stream()
-                .anyMatch(Column::isConnect4);
-        return isColumnConnect4;
+    private List<Diagonal> getAllDiagonals(){
+        return IntStream.range(0, COLUMNS)
+                .mapToObj(this::getDiagonal)
+                .collect(Collectors.toList());
+    }
+*/
+
+    private List<Row> getAllRows() {
+        return Row.getAll(this);
     }
 
     public char[][] getTable() {
@@ -65,21 +94,26 @@ public class Table {
         placeAtColumn(column, Position.STATE.PLAYER_2);
     }
 
-    private boolean isValidPosition(int i, int j){
-        return i >= 0 && i < ROWS && isValidColumn(j);
+    public boolean isValidPosition(int i, int j){
+        return isValidRow(i) && isValidColumn(j);
     }
 
     private boolean isValidColumn(int j){
         return j >= 0 && j < COLUMNS;
     }
 
-    public List<PositionPair> getPositionsOfConnect4() {
-        if(!isConnect4())
-            throw new IllegalStateException("No connect 4 found");
+    private boolean isValidRow(int row) {
+        return row >= 0 && row < ROWS;
+    }
 
-        return getColumnList().stream()
-                .filter(Column::isConnect4)
-                .map(Column::getPositionPair)
-                .collect(Collectors.toList());
+    @Override
+    public String toString() {
+        String result = "";
+        var rows = getAllRows();
+        Collections.reverse(rows);
+        for(Row row : rows) {
+            result += row.toString() + "\n";
+        }
+        return result;
     }
 }
