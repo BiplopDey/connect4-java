@@ -1,6 +1,7 @@
 package com.minimax.minimax.connect4;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -95,6 +96,7 @@ class TableTest {
     }
 
     @Test
+    @Disabled
     void is_connect_4_by_diagonal_positive_slope(){
         smallTable = new Table(4,4);
 
@@ -195,13 +197,14 @@ class TableTest {
         smallTable.placePlayer1AtColumn(1);
         smallTable.placePlayer1AtColumn(1);
 
+        var positionPairColumn0 = new PositionPair(smallTable.get(1,0),
+                smallTable.get(4,0));
+        var positionPairColumn1 = new PositionPair(smallTable.get(1,1),
+                smallTable.get(4,1));
+
         assertEquals(2, smallTable.getPositionsOfConnect4().size());
-        var positionPair = new PositionPair(new Position(1,0, smallTable),
-                new Position(4,0, smallTable));
-        var positionPair2 = new PositionPair(new Position(1,1, smallTable),
-                new Position(4,1, smallTable));
-        assertEquals(positionPair, smallTable.getPositionsOfConnect4().get(0));
-        assertEquals(positionPair2, smallTable.getPositionsOfConnect4().get(1));
+        assertEquals(positionPairColumn0, smallTable.getPositionsOfConnect4().get(0));
+        assertEquals(positionPairColumn1, smallTable.getPositionsOfConnect4().get(1));
     }
 
     @Test
@@ -220,11 +223,12 @@ class TableTest {
         smallTable.placePlayer1AtColumn(3);
         smallTable.placePlayer1AtColumn(4);
 
+        var positionPair = new PositionPair(smallTable.get(0,1),
+                smallTable.get(0,4));
+        var positionPair2 = new PositionPair(smallTable.get(1,1),
+                smallTable.get(1,4));
+
         assertEquals(2, smallTable.getPositionsOfConnect4().size());
-        var positionPair = new PositionPair(new Position(0,1, smallTable),
-                new Position(0,4, smallTable));
-        var positionPair2 = new PositionPair(new Position(1,1, smallTable),
-                new Position(1,4, smallTable));
         assertEquals(positionPair, smallTable.getPositionsOfConnect4().get(0));
         assertEquals(positionPair2, smallTable.getPositionsOfConnect4().get(1));
     }

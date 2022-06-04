@@ -1,6 +1,7 @@
 package com.minimax.minimax.connect4;
 
 import lombok.EqualsAndHashCode;
+import org.springframework.web.bind.annotation.PostMapping;
 
 @EqualsAndHashCode
 public class Position {
@@ -31,28 +32,35 @@ public class Position {
         }
     }
 
-    private final char[][] table;
-    private final int row;
-    private final int column;
-    private STATE state;
+    private final Table table;
+    private Integer row;
+    private Integer column;
 
-    public Position(int row, int column, Table table){
+    public Position(Table table){
+        this.table = table;
+    }
+
+    private Position( Integer row, Integer column, Table table){
+        this.table = table;
         this.row = row;
         this.column = column;
-        this.table = table.getTable();
+    }
 
-        state = getState();
+    public Position of(int row, int column){
+        if(!table.isValidPosition(row, column))
+            throw new InvalidPositionException("Illegal position: " + row + "," + column);
+
+        return new Position(row, column, table);
     }
 
     public STATE getState(){
-        switch (table[row][column]){
-            case 'X':
-                return STATE.PLAYER_1;
-            case 'O':
-                return STATE.PLAYER_2;
-            default:
-                return STATE.EMPTY;
-        }
+        ensureRowAndColumnAreNotNull();
+
+        return switch (table.getTable()[row][column]) {
+            case 'X' -> STATE.PLAYER_1;
+            case 'O' -> STATE.PLAYER_2;
+            default -> STATE.EMPTY;
+        };
     }
 
     public void placePlayer1(){
@@ -64,33 +72,40 @@ public class Position {
     }
 
     public boolean isEmpty(){
-        return state == STATE.EMPTY;
+        return getState() == STATE.EMPTY;
     }
 
     public boolean isPlayer1(){
-        return state == STATE.PLAYER_1;
+        return getState() == STATE.PLAYER_1;
     }
 
     public boolean isPlayer2(){
-        return state == STATE.PLAYER_2;
+        return getState() == STATE.PLAYER_2;
     }
 
     protected char getValue(){
-        return table[row][column];
+        ensureRowAndColumnAreNotNull();
+        return table.getTable()[row][column];
     }
-    /*
-    public void ensureIsValidPosition(){
-        if(!table.isValidPosition(row, column))
-            throw new IllegalArgumentException("Illegal position: " + row + "," + column);
-    }
-    */
+
     protected void place(Position.STATE state) {
-        this.state = state;
-        table[row][column] = state.getValue();
+        ensureRowAndColumnAreNotNull();
+        table.getTable()[row][column] = state.getValue();
     }
 
     @Override
     public String toString() {
         return "Position(" + row + "," + column + ")";
+    }
+
+    public void ensureRowAndColumnAreNotNull(){
+        if(row == null || column == null)
+            throw new IllegalStateException("Position cannot be null");
+    }
+
+    public static class InvalidPositionException extends RuntimeException{
+        public InvalidPositionException(String message){
+            super(message);
+        }
     }
 }

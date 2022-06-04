@@ -1,15 +1,17 @@
 package com.minimax.minimax.connect4;
 
+import lombok.EqualsAndHashCode;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@EqualsAndHashCode
 public class Table {
     public final int ROWS;
     public final int COLUMNS;
     private final char[][] table;
-
 
     public Table(int rows, int columns){
         this.ROWS = rows;
@@ -21,7 +23,7 @@ public class Table {
     public Position get(int row, int column){
         if(!isValidPosition(row, column))
             throw new IllegalArgumentException("Illegal position: " + row + "," + column);
-        return new Position(row, column, this);
+        return new Position(this).of(row, column);
     }
 
     private void placeAtColumn(int columnIndex, Position.STATE player) {
