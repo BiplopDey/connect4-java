@@ -96,7 +96,6 @@ class TableTest {
     }
 
     @Test
-    @Disabled
     void is_connect_4_by_diagonal_positive_slope(){
         smallTable = new Table(4,4);
 
@@ -114,10 +113,9 @@ class TableTest {
 
         smallTable.placePlayer1AtColumn(3);
 
-        System.out.println(smallTable.toString());
         assertTrue(smallTable.isConnect4());
     }
-    //toString is
+
     @Test
     void toString_print_table(){
         smallTable = new Table(2,2);

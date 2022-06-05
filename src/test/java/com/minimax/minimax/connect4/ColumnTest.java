@@ -10,11 +10,11 @@ import static org.junit.jupiter.api.Assertions.*;
 class ColumnTest {
     Column column;
     Table table;
+
     @BeforeEach
     void setUp() {
         table = new Table(2,2);
         column = new Column(1, table);
-
     }
 
     @Test
@@ -24,15 +24,16 @@ class ColumnTest {
 
     @Test
     void column_list() {
-        var list = List.of(new Position(table).of(0,1),
+        var sut = List.of(new Position(table).of(0,1),
                            new Position(table).of(1,1));
-        assertEquals(list, column.getPositions());
+
+        assertEquals(sut, column.getPositions());
     }
 
     @Test
     void put() {
         column.put(Position.STATE.PLAYER_1);
-        System.out.println(column.getPositions());
+
         assertTrue(column.getPositions().get(0).isPlayer1());
         assertTrue(column.getPositions().get(1).isEmpty());
     }
@@ -40,9 +41,11 @@ class ColumnTest {
     @Test
     void cant_put_and_throws_ColumnFullException() {
         column.put(Position.STATE.PLAYER_1).put(Position.STATE.PLAYER_1);
-        Exception exception = assertThrows(Column.ColumnFullException.class,
+
+        Exception sut = assertThrows(Column.ColumnFullException.class,
                 () -> column.put(Position.STATE.PLAYER_2));
-        assertEquals("Column is full", exception.getMessage());
+
+        assertEquals("Column is full", sut.getMessage());
     }
 
     @Test

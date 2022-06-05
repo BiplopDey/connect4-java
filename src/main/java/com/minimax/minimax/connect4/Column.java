@@ -17,12 +17,12 @@ public class Column extends TableList {
     }
 
     public Column put(Position.STATE state) {
-        for(Position p : list) {
+        for(Position p : list)
             if(p.isEmpty()) {
                 p.place(state);
-            return this;
+                return this;
             }
-        }
+
         throw new ColumnFullException("Column is full");
     }
 

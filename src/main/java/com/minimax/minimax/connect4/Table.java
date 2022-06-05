@@ -53,7 +53,7 @@ public class Table {
         List<TableList> result = new ArrayList<>();
         result.addAll(getAllColumns());
         result.addAll(getAllRows());
-     //   result.addAll(getAllDiagonals());
+        result.addAll(getAllDiagonals());
         return result;
     }
 
@@ -62,27 +62,20 @@ public class Table {
             throw new IllegalArgumentException("Illegal column: " + column);
         return new Column(column, this);
     }
+
     public Row getRow(int row) {
         if(!isValidRow(row))
             throw new IllegalArgumentException("Illegal row: " + row);
         return new Row(row, this);
     }
+
     private List<Column> getAllColumns() {
         return Column.getAll(this);
     }
-/*
-    private Diagonal getDiagonal(int column){
-        if(!isValidColumn(column))
-            throw new IllegalArgumentException("Illegal column: " + column);
-        return new Diagonal(column, this);
-    }
 
-    private List<Diagonal> getAllDiagonals(){
-        return IntStream.range(0, COLUMNS)
-                .mapToObj(this::getDiagonal)
-                .collect(Collectors.toList());
+    private List<TableList> getAllDiagonals(){
+        return new Diagonal(this).getAll();
     }
-*/
 
     private List<Row> getAllRows() {
         return Row.getAll(this);

@@ -40,7 +40,6 @@ public class TableList {
         return list;
     }
 
-    //toString list
     @Override
     public String toString() {
         return list.toString();
