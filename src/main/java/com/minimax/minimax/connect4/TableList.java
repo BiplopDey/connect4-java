@@ -1,8 +1,9 @@
 package com.minimax.minimax.connect4;
 
+import java.util.Arrays;
 import java.util.List;
 
-public abstract class TableList {
+public class TableList {
     protected final List<Position> list;
     private PositionPair positionPair;
 
@@ -11,10 +12,7 @@ public abstract class TableList {
     }
 
     private boolean areConnected(Position.STATE player, Position... positions) {
-        for(Position p : positions)
-            if(p.getValue() != player.getValue())
-                return false;
-        return true;
+        return Arrays.stream(positions).allMatch(p -> p.is(player));
     }
 
     public boolean isConnect4() {
@@ -38,7 +36,7 @@ public abstract class TableList {
         return positionPair;
     }
 
-    public List<Position> getList() {
+    public List<Position> getPositions() {
         return list;
     }
 
@@ -48,5 +46,20 @@ public abstract class TableList {
         return list.toString();
     }
 
+    public Position get(int i) {
+        return list.get(i);
+    }
 
+    public int size() {
+        return list.size();
+    }
+
+    //equals the elements of the list
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TableList that = (TableList) o;
+        return list.equals(that.list);
+    }
 }

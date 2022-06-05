@@ -74,15 +74,19 @@ public class Position {
     }
 
     public boolean isEmpty(){
-        return getState() == STATE.EMPTY;
+        return is(STATE.EMPTY);
     }
 
     public boolean isPlayer1(){
-        return getState() == STATE.PLAYER_1;
+        return is(STATE.PLAYER_1);
     }
 
     public boolean isPlayer2(){
-        return getState() == STATE.PLAYER_2;
+        return is(STATE.PLAYER_2);
+    }
+
+    public boolean is(STATE state){
+        return getState() == state;
     }
 
     protected char getValue(){

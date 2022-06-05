@@ -46,5 +46,4 @@ class PositionTest {
         assertEquals("Position(0,0)", position.toString());
     }
 
-
 }

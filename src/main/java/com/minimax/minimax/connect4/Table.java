@@ -117,9 +117,8 @@ public class Table {
         String result = "";
         var rows = getAllRows();
         Collections.reverse(rows);
-        for(Row row : rows) {
+        for(Row row : rows)
             result += row.toString() + "\n";
-        }
         return result;
     }
 }

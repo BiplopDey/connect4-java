@@ -26,15 +26,15 @@ class ColumnTest {
     void column_list() {
         var list = List.of(new Position(table).of(0,1),
                            new Position(table).of(1,1));
-        assertEquals(list, column.getList());
+        assertEquals(list, column.getPositions());
     }
 
     @Test
     void put() {
         column.put(Position.STATE.PLAYER_1);
-        System.out.println(column.getList());
-        assertTrue(column.getList().get(0).isPlayer1());
-        assertTrue(column.getList().get(1).isEmpty());
+        System.out.println(column.getPositions());
+        assertTrue(column.getPositions().get(0).isPlayer1());
+        assertTrue(column.getPositions().get(1).isEmpty());
     }
 
     @Test
@@ -47,7 +47,7 @@ class ColumnTest {
 
     @Test
     void getList() {
-        assertEquals(2, column.getList().size());
+        assertEquals(2, column.getPositions().size());
     }
 
     @Test
