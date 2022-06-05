@@ -7,9 +7,8 @@ import static org.junit.jupiter.api.Assertions.*;
 class PositionPairTest {
 
     Table table = new Table(6,7);
-    Position position = new Position(table);
-    Position position1 = position.of(0,0);
-    Position position2 = position.of(0,1);
+    Position position1 = table.get(0,0);
+    Position position2 = table.get(0,1);
 
     @Test
     void positionPair_equals_true() {

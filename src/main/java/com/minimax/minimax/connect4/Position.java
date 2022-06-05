@@ -1,9 +1,11 @@
 package com.minimax.minimax.connect4;
 
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import org.springframework.web.bind.annotation.PostMapping;
 
 @EqualsAndHashCode
+@Getter
 public class Position {
     enum STATE{
         EMPTY((char) 0){

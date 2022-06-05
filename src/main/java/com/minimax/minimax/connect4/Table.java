@@ -57,12 +57,16 @@ public class Table {
         return result;
     }
 
-    private Column getColumn(int column) {
+    public Column getColumn(int column) {
         if(!isValidColumn(column))
             throw new IllegalArgumentException("Illegal column: " + column);
         return new Column(column, this);
     }
-
+    public Row getRow(int row) {
+        if(!isValidRow(row))
+            throw new IllegalArgumentException("Illegal row: " + row);
+        return new Row(row, this);
+    }
     private List<Column> getAllColumns() {
         return Column.getAll(this);
     }
