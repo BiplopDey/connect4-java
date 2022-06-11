@@ -1,4 +1,4 @@
-package com.minimax.minimax.connect4;
+package com.minimax.minimax.connect4.domain;
 
 import java.util.List;
 import java.util.stream.Collectors;

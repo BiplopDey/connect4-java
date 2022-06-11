@@ -1,6 +1,4 @@
-package com.minimax.minimax.connect4;
-
-import lombok.EqualsAndHashCode;
+package com.minimax.minimax.connect4.domain;
 
 import java.util.ArrayList;
 import java.util.List;

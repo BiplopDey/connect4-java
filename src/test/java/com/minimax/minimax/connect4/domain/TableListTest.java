@@ -1,5 +1,7 @@
-package com.minimax.minimax.connect4;
+package com.minimax.minimax.connect4.domain;
 
+import com.minimax.minimax.connect4.domain.Table;
+import com.minimax.minimax.connect4.domain.TableList;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

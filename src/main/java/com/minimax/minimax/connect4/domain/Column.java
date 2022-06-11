@@ -1,4 +1,4 @@
-package com.minimax.minimax.connect4;
+package com.minimax.minimax.connect4.domain;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,9 +32,5 @@ public class Column extends TableList {
                 .collect(Collectors.toList());
     }
 
-    public static class ColumnFullException extends RuntimeException {
-        public ColumnFullException(String message) {
-            super(message);
-        }
-    }
+
 }

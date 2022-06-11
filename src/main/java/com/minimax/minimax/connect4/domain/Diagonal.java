@@ -1,4 +1,4 @@
-package com.minimax.minimax.connect4;
+package com.minimax.minimax.connect4.domain;
 
 import java.util.ArrayList;
 import java.util.Collections;

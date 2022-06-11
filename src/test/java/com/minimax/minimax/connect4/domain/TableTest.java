@@ -1,5 +1,9 @@
-package com.minimax.minimax.connect4;
+package com.minimax.minimax.connect4.domain;
 
+import com.minimax.minimax.connect4.domain.ColumnFullException;
+import com.minimax.minimax.connect4.domain.Position;
+import com.minimax.minimax.connect4.domain.PositionPair;
+import com.minimax.minimax.connect4.domain.Table;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -75,7 +79,7 @@ class TableTest {
     void cant_place_token_in_column_full(){
         putInColumn(table2x2, 1, PLAYER_1, PLAYER_1);
 
-        Exception sut = assertThrows(Column.ColumnFullException.class,
+        Exception sut = assertThrows(ColumnFullException.class,
                 () -> table2x2.placePlayer1AtColumn(1));
 
         assertEquals("Column 1 is full", sut.getMessage());

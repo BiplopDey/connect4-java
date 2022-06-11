@@ -1,5 +1,8 @@
-package com.minimax.minimax.connect4;
+package com.minimax.minimax.connect4.domain;
 
+import com.minimax.minimax.connect4.domain.Position;
+import com.minimax.minimax.connect4.domain.PositionPair;
+import com.minimax.minimax.connect4.domain.Table;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

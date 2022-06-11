@@ -1,5 +1,6 @@
-package com.minimax.minimax.connect4;
+package com.minimax.minimax.connect4.domain;
 
+import com.minimax.minimax.connect4.domain.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -49,7 +50,7 @@ class ColumnTest {
     void cant_put_and_throws_ColumnFullException() {
         put(column_size_2, PLAYER_1, PLAYER_1);
 
-        Exception sut = assertThrows(Column.ColumnFullException.class,
+        Exception sut = assertThrows(ColumnFullException.class,
                 () -> column_size_2.put(PLAYER_2));
 
         assertEquals("Column 1 is full", sut.getMessage());

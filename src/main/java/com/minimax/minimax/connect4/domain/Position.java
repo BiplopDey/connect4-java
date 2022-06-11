@@ -1,8 +1,7 @@
-package com.minimax.minimax.connect4;
+package com.minimax.minimax.connect4.domain;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import org.springframework.web.bind.annotation.PostMapping;
 
 @EqualsAndHashCode
 @Getter

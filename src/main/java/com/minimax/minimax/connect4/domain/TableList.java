@@ -1,4 +1,4 @@
-package com.minimax.minimax.connect4;
+package com.minimax.minimax.connect4.domain;
 
 import java.util.Arrays;
 import java.util.List;

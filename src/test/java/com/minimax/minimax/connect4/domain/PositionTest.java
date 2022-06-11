@@ -1,5 +1,7 @@
-package com.minimax.minimax.connect4;
+package com.minimax.minimax.connect4.domain;
 
+import com.minimax.minimax.connect4.domain.Position;
+import com.minimax.minimax.connect4.domain.Table;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

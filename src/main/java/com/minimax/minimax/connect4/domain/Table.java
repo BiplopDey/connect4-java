@@ -1,4 +1,4 @@
-package com.minimax.minimax.connect4;
+package com.minimax.minimax.connect4.domain;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @EqualsAndHashCode
-public class Table {
+public class Table implements Connect4Table {
     public final int ROWS;
     public final int COLUMNS;
     @Getter
