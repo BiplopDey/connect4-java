@@ -8,7 +8,7 @@ public class Row extends TableList {
 
     public Row(int row, Table table) {
         super(IntStream.range(0, table.COLUMNS)
-                .mapToObj(column -> table.get(row, column))
+                .mapToObj(column -> table.getPosition(row, column))
                 .collect(Collectors.toList()));
     }
 
@@ -20,11 +20,9 @@ public class Row extends TableList {
 
     @Override
     public String toString() {
-        var result = list.stream()
+        return list.stream()
                 .map(p->p.getState())
                 .collect(Collectors.toList())
                 .toString();
-
-        return result;
     }
 }

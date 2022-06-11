@@ -8,7 +8,7 @@ public class Column extends TableList {
 
     public Column(int column, Table table){
         super(IntStream.range(0, table.ROWS)
-                .mapToObj(row -> table.get(row, column))
+                .mapToObj(row -> table.getPosition(row, column))
                 .collect(Collectors.toList()));
     }
 
@@ -23,18 +23,18 @@ public class Column extends TableList {
                 return this;
             }
 
-        throw new ColumnFullException("Column is full");
-    }
-
-    public static class ColumnFullException extends RuntimeException {
-        public ColumnFullException(String message) {
-            super(message);
-        }
+        throw new ColumnFullException("Column "+ list.get(0).getColumn() +" is full");
     }
 
     public static List<Column> getAll(Table table) {
         return IntStream.range(0, table.COLUMNS)
                 .mapToObj(column -> new Column(column, table))
                 .collect(Collectors.toList());
+    }
+
+    public static class ColumnFullException extends RuntimeException {
+        public ColumnFullException(String message) {
+            super(message);
+        }
     }
 }

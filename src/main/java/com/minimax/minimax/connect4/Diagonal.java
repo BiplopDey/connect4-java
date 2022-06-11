@@ -20,7 +20,7 @@ public class Diagonal {
         int rowIncrement = slope == SLOPE.POSITIVE ? 1 : -1;
 
         while(table.isValidPosition(row, column)){
-            result.add(table.get(row, column++));
+            result.add(table.getPosition(row, column++));
             row += rowIncrement;
         }
 
@@ -28,11 +28,11 @@ public class Diagonal {
     }
 
     public TableList getPositiveSlope(int row, int column) {
-        return getPositiveSlope(table.get(row, column));
+        return getPositiveSlope(table.getPosition(row, column));
     }
 
     public TableList getNegativeSlope(int row, int column) {
-        return getNegativeSlope(table.get(row, column));
+        return getNegativeSlope(table.getPosition(row, column));
     }
 
     private TableList getPositiveSlope(Position initialPosition) {

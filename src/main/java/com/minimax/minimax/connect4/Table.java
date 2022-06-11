@@ -1,6 +1,7 @@
 package com.minimax.minimax.connect4;
 
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,28 +12,20 @@ import java.util.stream.Collectors;
 public class Table {
     public final int ROWS;
     public final int COLUMNS;
+    @Getter
     private final char[][] table;
 
     public Table(int rows, int columns){
-        this.ROWS = rows;
-        this.COLUMNS = columns;
+        ROWS = rows;
+        COLUMNS = columns;
         table = new char[rows][columns];
-
     }
 
-    public Position get(int row, int column){
+    public Position getPosition(int row, int column){
         if(!isValidPosition(row, column))
             throw new IllegalArgumentException("Illegal position: " + row + "," + column);
-        return new Position(this).of(row, column);
-    }
 
-    private void placeAtColumn(int columnIndex, Position.STATE player) {
-        if(!isValidColumn(columnIndex))
-            throw new IllegalArgumentException("Illegal column: " + columnIndex);
-        Column columnObj = getColumn(columnIndex);
-        if(columnObj.isFull())
-            throw new Column.ColumnFullException("Column " + columnIndex + " is full");
-        columnObj.put(player);
+        return new Position(this).of(row, column);
     }
 
     public boolean isConnect4() {
@@ -51,21 +44,18 @@ public class Table {
 
     private List<TableList> getAllTableLists() {
         List<TableList> result = new ArrayList<>();
+
         result.addAll(getAllColumns());
         result.addAll(getAllRows());
         result.addAll(getAllDiagonals());
-        return result;
-    }
 
-    public Column getColumn(int column) {
-        if(!isValidColumn(column))
-            throw new IllegalArgumentException("Illegal column: " + column);
-        return new Column(column, this);
+        return result;
     }
 
     public Row getRow(int row) {
         if(!isValidRow(row))
             throw new IllegalArgumentException("Illegal row: " + row);
+
         return new Row(row, this);
     }
 
@@ -81,16 +71,26 @@ public class Table {
         return Row.getAll(this);
     }
 
-    public char[][] getTable() {
-        return table;
-    }
-
     public void placePlayer1AtColumn(int column) {
         placeAtColumn(column, Position.STATE.PLAYER_1);
     }
 
     public void placePlayer2AtColumn(int column) {
         placeAtColumn(column, Position.STATE.PLAYER_2);
+    }
+
+    private void placeAtColumn(int columnIndex, Position.STATE player) {
+        if(!isValidColumn(columnIndex))
+            throw new IllegalArgumentException("Illegal column: " + columnIndex);
+
+        getColumn(columnIndex).put(player);
+    }
+
+    public Column getColumn(int column) {
+        if(!isValidColumn(column))
+            throw new IllegalArgumentException("Illegal column: " + column);
+
+        return  new Column(column, this);
     }
 
     public boolean isValidPosition(int i, int j){
