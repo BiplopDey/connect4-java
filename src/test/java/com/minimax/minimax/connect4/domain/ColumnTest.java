@@ -1,10 +1,8 @@
 package com.minimax.minimax.connect4.domain;
 
-import com.minimax.minimax.connect4.domain.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -32,18 +30,14 @@ class ColumnTest {
 
     @Test
     void column_list() {
-        var sut = List.of(new Position(table2x2).of(0,1),
-                           new Position(table2x2).of(1,1));
-
-        assertEquals(sut, column_size_2.getPositions());
+        assertEquals(0, column_size_2.size());
     }
 
     @Test
     void put() {
         column_size_2.put(PLAYER_1);
-
+        assertEquals(1, column_size_2.size());
         assertTrue(column_size_2.getPositions().get(0).isPlayer1());
-        assertTrue(column_size_2.getPositions().get(1).isEmpty());
     }
 
     @Test
@@ -54,11 +48,6 @@ class ColumnTest {
                 () -> column_size_2.put(PLAYER_2));
 
         assertEquals("Column 1 is full", sut.getMessage());
-    }
-
-    @Test
-    void getList() {
-        assertEquals(2, column_size_2.getPositions().size());
     }
 
     @Test
@@ -97,4 +86,6 @@ class ColumnTest {
         for (Position.STATE player: players)
             column.put(player);
     }
+
+
 }

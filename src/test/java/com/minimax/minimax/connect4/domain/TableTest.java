@@ -1,11 +1,9 @@
 package com.minimax.minimax.connect4.domain;
 
-import com.minimax.minimax.connect4.domain.ColumnFullException;
-import com.minimax.minimax.connect4.domain.Position;
-import com.minimax.minimax.connect4.domain.PositionPair;
-import com.minimax.minimax.connect4.domain.Table;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -27,6 +25,33 @@ class TableTest {
     void set_rowAndColumn(){
         assertEquals(6, table6x7.ROWS);
         assertEquals(7, table6x7.COLUMNS);
+    }
+
+    @Test
+    void set_rowAndColumnTableList(){
+        var table = List.of(
+                List.of(PLAYER_1, EMPTY),
+                List.of(PLAYER_1, EMPTY),
+                List.of(PLAYER_1, PLAYER_2));
+
+        var sut = new Table(table);
+
+        assertEquals(3, sut.ROWS);
+        assertEquals(2, sut.COLUMNS);
+        assertTrue(sut.getPosition(0, 0).isPlayer1());
+        assertTrue(sut.getPosition(0, 1).isPlayer2());
+        assertTrue(sut.getPosition(1, 1).isEmpty());
+    }
+
+    @Test
+    void allRowsArentTheSameLength_and_throw_IllegalArgumetException(){
+        var table = List.of(
+                List.of(PLAYER_1, EMPTY),
+                List.of(PLAYER_1, EMPTY),
+                List.of(PLAYER_1, PLAYER_2, PLAYER_1));
+
+        Exception sut = assertThrows( IllegalArgumentException.class, () -> new Table(table));
+        assertEquals("All rows must be the same length", sut.getMessage());
     }
 
     @Test
@@ -93,6 +118,7 @@ class TableTest {
 
         assertTrue(table.isConnect4());
     }
+
 
     @Test
     void is_connect_4_by_diagonal_positive_slope() {

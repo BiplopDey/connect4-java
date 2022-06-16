@@ -13,12 +13,30 @@ public class Table implements Connect4Table {
     public final int ROWS;
     public final int COLUMNS;
     @Getter
-    private final char[][] table;
+    private  char[][] table;
+
+    public Table(List<List<Position.STATE>> table) {
+        if(!areAllRowsTheSameLength(table))
+            throw new IllegalArgumentException("All rows must be the same length");
+
+        this.COLUMNS = table.get(0).size();
+        this.ROWS = table.size();
+        this.table = toCharArray(table);
+
+    }
 
     public Table(int rows, int columns){
         ROWS = rows;
         COLUMNS = columns;
-        table = new char[rows][columns];
+        table = new char[ROWS][COLUMNS];
+    }
+
+    private char[][] toCharArray(List<List<Position.STATE>> table){
+        char[][] array = new char[ROWS][COLUMNS];
+        for(int row = 0; row < ROWS; row++)
+            for(int column = 0; column < COLUMNS; column++)
+                array[row][column] = table.get(ROWS-1-row).get(column).getValue();
+        return array;
     }
 
     public Position getPosition(int row, int column){
@@ -103,6 +121,10 @@ public class Table implements Connect4Table {
 
     private boolean isValidRow(int row) {
         return row >= 0 && row < ROWS;
+    }
+
+    private boolean areAllRowsTheSameLength(List<List<Position.STATE>> table) {
+        return table.stream().mapToInt(List::size).distinct().count() == 1;
     }
 
     @Override

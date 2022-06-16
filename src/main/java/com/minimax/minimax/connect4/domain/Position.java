@@ -24,6 +24,8 @@ public class Position {
             }
         };
 
+
+
         private final char value;
         STATE(char state){
             this.value = state;

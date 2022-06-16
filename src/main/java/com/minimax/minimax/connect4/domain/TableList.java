@@ -53,7 +53,6 @@ public class TableList {
         return list.size();
     }
 
-    //equals the elements of the list
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
