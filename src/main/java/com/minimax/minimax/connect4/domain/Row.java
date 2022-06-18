@@ -7,22 +7,26 @@ import java.util.stream.IntStream;
 public class Row extends TableList {
 
     public Row(int row, Table table) {
-        super(IntStream.range(0, table.COLUMNS)
-                .mapToObj(column -> table.getPosition(row, column))
-                .collect(Collectors.toList()));
+        super(
+                IntStream.range(0, table.COLUMN_SIZE)
+                .mapToObj(column -> table.getCell(row, column))
+                .toList()
+        );
     }
 
     public static List<Row> getAll(Table table) {
-        return IntStream.range(0, table.ROWS)
+        return IntStream.range(0, table.ROW_SIZE)
                 .mapToObj(row -> new Row(row, table))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
     public String toString() {
         return list.stream()
-                .map(p->p.getState())
-                .collect(Collectors.toList())
+                .map(Cell::getValue)
+                .toList()
                 .toString();
     }
+
+
 }

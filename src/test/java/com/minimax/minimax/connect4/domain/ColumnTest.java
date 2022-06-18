@@ -11,8 +11,8 @@ class ColumnTest {
     private Column column_size_6;
     private Table table2x2;
     private Table table6x7;
-    private final Position.STATE PLAYER_1 = Position.STATE.PLAYER_1;
-    private final Position.STATE PLAYER_2 = Position.STATE.PLAYER_2;
+    private final PLAYER PLAYER_1 = PLAYER.PLAYER_1;
+    private final PLAYER PLAYER_2 = PLAYER.PLAYER_2;
 
     @BeforeEach
     void setUp() {
@@ -37,7 +37,7 @@ class ColumnTest {
     void put() {
         column_size_2.put(PLAYER_1);
         assertEquals(1, column_size_2.size());
-        assertTrue(column_size_2.getPositions().get(0).isPlayer1());
+        assertTrue(column_size_2.getCells().get(0).isPlayer1());
     }
 
     @Test
@@ -66,10 +66,10 @@ class ColumnTest {
     void get_positionPair_of_connect_4() {
         put(column_size_6, PLAYER_1, PLAYER_2, PLAYER_1, PLAYER_1, PLAYER_1, PLAYER_1);
 
-        var positionPair = new PositionPair(
-                table6x7.getPosition(2,1),
-                table6x7.getPosition(5,1));
-        assertEquals(positionPair, column_size_6.getPositionPair());
+        var positionPair = new CellPair(
+                table6x7.getCell(2,1),
+                table6x7.getCell(5,1));
+        assertEquals(positionPair, column_size_6.getCellPair());
     }
 
     @Test
@@ -77,13 +77,13 @@ class ColumnTest {
         put(column_size_6, PLAYER_1, PLAYER_2, PLAYER_1, PLAYER_1, PLAYER_1);
 
         Exception sut = assertThrows(IllegalStateException.class,
-                () -> column_size_6.getPositionPair());
+                () -> column_size_6.getCellPair());
 
         assertEquals("Column is not connect4", sut.getMessage());
     }
 
-    private void put(Column column, Position.STATE... players) {
-        for (Position.STATE player: players)
+    private void put(Column column, PLAYER... players) {
+        for (PLAYER player: players)
             column.put(player);
     }
 

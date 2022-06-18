@@ -10,10 +10,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class TableTest {
     Table table6x7, table2x2, table;
-
-    private final Position.STATE PLAYER_1 = Position.STATE.PLAYER_1;
-    private final Position.STATE PLAYER_2 = Position.STATE.PLAYER_2;
-    private final Position.STATE EMPTY = Position.STATE.EMPTY;
+    private final PLAYER PLAYER_1 = PLAYER.PLAYER_1;
+    private final PLAYER PLAYER_2 = PLAYER.PLAYER_2;
 
     @BeforeEach
     void setUp() {
@@ -23,64 +21,61 @@ class TableTest {
 
     @Test
     void set_rowAndColumn(){
-        assertEquals(6, table6x7.ROWS);
-        assertEquals(7, table6x7.COLUMNS);
+        assertEquals(6, table6x7.ROW_SIZE);
+        assertEquals(7, table6x7.COLUMN_SIZE);
     }
 
     @Test
     void set_rowAndColumnTableList(){
         var table = List.of(
-                List.of(PLAYER_1, EMPTY),
-                List.of(PLAYER_1, EMPTY),
+                List.of(PLAYER_1),
+                List.of(PLAYER_1),
                 List.of(PLAYER_1, PLAYER_2));
 
-        var sut = new Table(table);
+        var sut = new Table(2, table);
 
-        assertEquals(3, sut.ROWS);
-        assertEquals(2, sut.COLUMNS);
-        assertTrue(sut.getPosition(0, 0).isPlayer1());
-        assertTrue(sut.getPosition(0, 1).isPlayer2());
-        assertTrue(sut.getPosition(1, 1).isEmpty());
+        assertEquals(2, sut.ROW_SIZE);
+        assertEquals(3, sut.COLUMN_SIZE);
+        assertTrue(sut.getCell(0, 0).isPlayer1());
+        assertTrue(sut.getCell(1, 0).isEmpty());
+        assertTrue(sut.getCell(0, 1).isPlayer1());
     }
 
     @Test
-    void allRowsArentTheSameLength_and_throw_IllegalArgumetException(){
+    void allColumnsShoulBeLessThanColumnSizeSpecified(){
         var table = List.of(
-                List.of(PLAYER_1, EMPTY),
-                List.of(PLAYER_1, EMPTY),
+                List.of(PLAYER_1),
                 List.of(PLAYER_1, PLAYER_2, PLAYER_1));
 
-        Exception sut = assertThrows( IllegalArgumentException.class, () -> new Table(table));
-        assertEquals("All rows must be the same length", sut.getMessage());
+        Exception sut = assertThrows( IllegalArgumentException.class, () -> new Table(2, table));
+        assertEquals("All columns length should be less than row size specified", sut.getMessage());
     }
 
     @Test
     void table_is_initialized_with_empty(){
-        for(int i = 0; i < table6x7.ROWS; i++)
-            for(int j = 0; j < table6x7.COLUMNS; j++)
-                assertTrue(table6x7.getPosition(i,j).isEmpty());
+        for(int i = 0; i < table6x7.ROW_SIZE; i++)
+            for(int j = 0; j < table6x7.COLUMN_SIZE; j++)
+                assertTrue(table6x7.getCell(i,j).isEmpty());
     }
 
     @Test
     void place_token_in_table(){
-        var sut = table6x7.getPosition(0,1);
+        var sut = table6x7.getCell(0,1);
 
-        assertEquals(new Position(table6x7).of(0,1), sut);
+        assertEquals(new Cell(table6x7).of(0,1), sut);
     }
 
     @Test
-    void place_token_in_illegal_position(){
+    void place_token_in_invalid_row(){
         Exception sut = assertThrows(IllegalArgumentException.class,
-                () -> table6x7.getPosition(7,0).placePlayer1());
-        assertThrows(IllegalArgumentException.class,
-                () -> table6x7.getPosition(6,0).placePlayer1());
+                () -> table6x7.getCell(6,0).placePlayer1());
 
-        assertEquals("Illegal position: 7,0", sut.getMessage());
+        assertEquals("Illegal row: 6", sut.getMessage());
     }
 
     @Test
     void cant_place_token_in_invalid_column(){
-        Exception sut = assertThrows(IllegalArgumentException.class,
+        Exception sut = assertThrows(Connect4Table.InvalidColumnIndexException.class,
                 () -> table6x7.placePlayer1AtColumn(7));
 
         assertEquals("Illegal column: 7", sut.getMessage());
@@ -91,13 +86,13 @@ class TableTest {
         putInColumn(table6x7, 0, PLAYER_1, PLAYER_1, PLAYER_2);
         table6x7.placePlayer2AtColumn(1);
 
-        assertTrue(table6x7.getPosition(0,0).isPlayer1());
-        assertTrue(table6x7.getPosition(1,0).isPlayer1());
-        assertTrue(table6x7.getPosition(2,0).isPlayer2());
-        assertTrue(table6x7.getPosition(3,0).isEmpty());
+        assertTrue(table6x7.getCell(0,0).isPlayer1());
+        assertTrue(table6x7.getCell(1,0).isPlayer1());
+        assertTrue(table6x7.getCell(2,0).isPlayer2());
+        assertTrue(table6x7.getCell(3,0).isEmpty());
 
-        assertTrue(table6x7.getPosition(0,1).isPlayer2());
-        assertTrue(table6x7.getPosition(1,1).isEmpty());
+        assertTrue(table6x7.getCell(0,1).isPlayer2());
+        assertTrue(table6x7.getCell(1,1).isEmpty());
     }
 
     @Test
@@ -119,54 +114,54 @@ class TableTest {
         assertTrue(table.isConnect4());
     }
 
-
     @Test
     void is_connect_4_by_diagonal_positive_slope() {
         table = new Table(4, 4);
 
-        putInAllColumns(table,'X','X','X','O');
-        putInAllColumns(table,' ','X','X','O');
-        putInAllColumns(table,' ',' ','X','O');
-        putInAllColumns(table,' ',' ',' ','X');
+        putRow(table,'X','X','X','O');
+        putRow(table,' ','X','X','O');
+        putRow(table,' ',' ','X','O');
+        putRow(table,' ',' ',' ','X');
 
         assertTrue(table.isConnect4());
-        assertThat(table.getPositionsOfConnect4()).hasSize(1);
+        assertThat(table.getCellsOfConnect4()).hasSize(1);
         assertEquals("[Position(0,0), Position(3,3)]",
-                table.getPositionsOfConnect4().get(0).toString());
+                table.getCellsOfConnect4().get(0).toString());
     }
 
     @Test
     void is_connect_4_by_diagonal_positive_slope_shifted() {
         table = new Table(5, 5);
 
-        putInAllColumns(table,' ','X','X','X','O');
-        putInAllColumns(table,' ',' ','X','X','O');
-        putInAllColumns(table,' ',' ',' ','X','O');
-        putInAllColumns(table,' ',' ',' ',' ','X');
+        putRow(table,' ','X','X','X','O');
+        putRow(table,' ',' ','X','X','O');
+        putRow(table,' ',' ',' ','X','O');
+        putRow(table,' ',' ',' ',' ','X');
 
         assertTrue(table.isConnect4());
-        assertThat(table.getPositionsOfConnect4()).hasSize(1);
+        assertThat(table.getCellsOfConnect4()).hasSize(1);
         assertEquals("[Position(0,1), Position(3,4)]",
-                table.getPositionsOfConnect4().get(0).toString());
+                table.getCellsOfConnect4().get(0).toString());
     }
 
     @Test
     void is_connect_4_by_diagonal_negative_slope() {
         table = new Table(4, 4);
 
-        putInAllColumns(table,'X','X','X','O');
-        putInAllColumns(table,'X','X','O','O');
-        putInAllColumns(table,'X','O','X','O');
-        putInAllColumns(table,'O',' ',' ',' ');
+        putRow(table,'X','X','X','O');
+        putRow(table,'X','X','O','O');
+        putRow(table,'X','O','X','O');
+        putRow(table,'O',' ',' ',' ');
 
         assertTrue(table.isConnect4());
-        assertThat(table.getPositionsOfConnect4()).hasSize(1);
+        assertThat(table.getCellsOfConnect4()).hasSize(1);
         assertEquals("[Position(3,0), Position(0,3)]",
-                table.getPositionsOfConnect4().get(0).toString());
+                table.getCellsOfConnect4().get(0).toString());
     }
+
     @Test
     void toString_print_table(){
-        putInAllColumns(table2x2, PLAYER_1, PLAYER_2);
+        putRow(table2x2, PLAYER_1, PLAYER_2);
 
         var expected =  "[ ,  ]\n" +
                         "[X, O]\n";
@@ -174,10 +169,23 @@ class TableTest {
     }
 
     @Test
+    void is_full(){
+        putRow(table2x2, PLAYER_1, PLAYER_2);
+        putRow(table2x2, PLAYER_1, PLAYER_2);
+        assertTrue(table2x2.isFull());
+    }
+
+    @Test
+    void is_not_full(){
+        putRow(table2x2, PLAYER_1, PLAYER_2);
+        assertFalse(table2x2.isFull());
+    }
+
+    @Test
     void is_connect_4_by_row_only_player1(){
         table = new Table(5,6);
 
-        putInAllColumns(table, PLAYER_2, PLAYER_1, PLAYER_1, PLAYER_1, PLAYER_1, EMPTY);
+        putRow(table, PLAYER_2, PLAYER_1, PLAYER_1, PLAYER_1, PLAYER_1);
 
         assertTrue(table.isConnect4());
     }
@@ -195,7 +203,7 @@ class TableTest {
     void is_not_connect_4_by_row(){
         table = new Table(6,5);
 
-        putInAllColumns(table, PLAYER_1, PLAYER_1, PLAYER_1, PLAYER_2, PLAYER_1);
+        putRow(table, PLAYER_1, PLAYER_1, PLAYER_1, PLAYER_2, PLAYER_1);
 
         assertFalse(table.isConnect4());
     }
@@ -206,7 +214,7 @@ class TableTest {
         putInColumn(table, 0, PLAYER_1, PLAYER_1, PLAYER_1, PLAYER_2);
 
         Exception sut = assertThrows(IllegalStateException.class,
-                () -> table.getPositionsOfConnect4());
+                () -> table.getCellsOfConnect4());
 
         assertEquals("No connect 4 found", sut.getMessage());
     }
@@ -218,40 +226,40 @@ class TableTest {
         putInColumn(table, 0, PLAYER_2, PLAYER_1, PLAYER_1, PLAYER_1, PLAYER_1);
         putInColumn(table, 1, PLAYER_2, PLAYER_1, PLAYER_1, PLAYER_1, PLAYER_1);
 
-        var positionPairColumn0 = new PositionPair(
-                table.getPosition(1,0),
-                table.getPosition(4,0));
-        var positionPairColumn1 = new PositionPair(
-                table.getPosition(1,1),
-                table.getPosition(4,1));
-        assertEquals(2, table.getPositionsOfConnect4().size());
-        assertEquals(positionPairColumn0, table.getPositionsOfConnect4().get(0));
-        assertEquals(positionPairColumn1, table.getPositionsOfConnect4().get(1));
+        var positionPairColumn0 = new CellPair(
+                table.getCell(1,0),
+                table.getCell(4,0));
+        var positionPairColumn1 = new CellPair(
+                table.getCell(1,1),
+                table.getCell(4,1));
+        assertEquals(2, table.getCellsOfConnect4().size());
+        assertEquals(positionPairColumn0, table.getCellsOfConnect4().get(0));
+        assertEquals(positionPairColumn1, table.getCellsOfConnect4().get(1));
     }
 
     @Test
     void get_positions_of_connect4_row(){
         table = new Table(6, 5);
 
-        putInAllColumns(table, PLAYER_2, PLAYER_1, PLAYER_1, PLAYER_1, PLAYER_1);
-        putInAllColumns(table, PLAYER_2, PLAYER_1, PLAYER_1, PLAYER_1, PLAYER_1);
+        putRow(table, PLAYER_2, PLAYER_1, PLAYER_1, PLAYER_1, PLAYER_1);
+        putRow(table, PLAYER_2, PLAYER_1, PLAYER_1, PLAYER_1, PLAYER_1);
 
-        var positionPair = new PositionPair(table.getPosition(0,1),
-                table.getPosition(0,4));
-        var positionPair2 = new PositionPair(table.getPosition(1,1),
-                table.getPosition(1,4));
-        assertEquals(2, table.getPositionsOfConnect4().size());
-        assertEquals(positionPair, table.getPositionsOfConnect4().get(0));
-        assertEquals(positionPair2, table.getPositionsOfConnect4().get(1));
+        var positionPair = new CellPair(table.getCell(0,1),
+                table.getCell(0,4));
+        var positionPair2 = new CellPair(table.getCell(1,1),
+                table.getCell(1,4));
+        assertEquals(2, table.getCellsOfConnect4().size());
+        assertEquals(positionPair, table.getCellsOfConnect4().get(0));
+        assertEquals(positionPair2, table.getCellsOfConnect4().get(1));
     }
 
-    private void putInColumn(Table table, int columnIndex, Position.STATE... players) {
+    private void putInColumn(Table table, int columnIndex, PLAYER... players) {
         var column = table.getColumn(columnIndex);
-        for (Position.STATE player: players)
+        for (PLAYER player: players)
             column.put(player);
     }
 
-    private void putInAllColumns(Table table, Character... states) {
+    private void putRow(Table table, Character... states) {
         for (int i = 0; i < states.length; i++){
             if (states[i].equals('X'))
                 table.placePlayer1AtColumn(i);
@@ -259,11 +267,11 @@ class TableTest {
                 table.placePlayer2AtColumn(i);
         }
     }
-    private void putInAllColumns(Table table, Position.STATE... states) {
-        for (int i = 0; i < states.length; i++){
-            if (states[i] == PLAYER_1)
+    private void putRow(Table table, PLAYER... players) {
+        for (int i = 0; i < players.length; i++){
+            if (players[i] == PLAYER_1)
                 table.placePlayer1AtColumn(i);
-            if (states[i] == PLAYER_2)
+            if (players[i] == PLAYER_2)
                 table.placePlayer2AtColumn(i);
         }
     }

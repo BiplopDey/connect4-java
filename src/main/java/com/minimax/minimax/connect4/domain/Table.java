@@ -10,54 +10,69 @@ import java.util.stream.Collectors;
 
 @EqualsAndHashCode
 public class Table implements Connect4Table {
-    public final int ROWS;
-    public final int COLUMNS;
+    public final int ROW_SIZE;
+    public final int COLUMN_SIZE;
     @Getter
     private  char[][] table;
 
-    public Table(List<List<Position.STATE>> table) {
-        if(!areAllRowsTheSameLength(table))
-            throw new IllegalArgumentException("All rows must be the same length");
+    public Table(int rowSize, List<List<PLAYER>> table) {
+        this.COLUMN_SIZE = table.size();
+        this.ROW_SIZE = rowSize;
+        if(!areAllColumnsSizeLEQThanROW_SIZE(table))
+            throw new IllegalArgumentException("All columns length should be less than row size specified");
 
-        this.COLUMNS = table.get(0).size();
-        this.ROWS = table.size();
-        this.table = toCharArray(table);
-
+        buildTable(table);
     }
 
-    public Table(int rows, int columns){
-        ROWS = rows;
-        COLUMNS = columns;
-        table = new char[ROWS][COLUMNS];
+    public Table(int rowSize, int columnSize){
+        ROW_SIZE = rowSize;
+        COLUMN_SIZE = columnSize;
+        initializeTable();
     }
 
-    private char[][] toCharArray(List<List<Position.STATE>> table){
-        char[][] array = new char[ROWS][COLUMNS];
-        for(int row = 0; row < ROWS; row++)
-            for(int column = 0; column < COLUMNS; column++)
-                array[row][column] = table.get(ROWS-1-row).get(column).getValue();
-        return array;
+    private void initializeTable() {
+        table = new char[ROW_SIZE][COLUMN_SIZE];
+        for(int i = 0; i < ROW_SIZE; i++)
+            for(int j = 0; j < COLUMN_SIZE; j++)
+                table[i][j] = Cell.EMPTY;
     }
 
-    public Position getPosition(int row, int column){
-        if(!isValidPosition(row, column))
-            throw new IllegalArgumentException("Illegal position: " + row + "," + column);
-
-        return new Position(this).of(row, column);
+    private void buildTable(List<List<PLAYER>> table){
+        initializeTable();
+        for (int columnIndex = 0; columnIndex < COLUMN_SIZE; columnIndex++)
+            for (int row = 0; row < table.get(columnIndex).size(); row++)
+                this.table[row][columnIndex] = table.get(columnIndex).get(row).getValue();
     }
 
+    public Cell getCell(int row, int column){
+        ensureIsValidCell(row, column);
+        return new Cell(this).of(row, column);
+    }
+
+    private void ensureIsValidCell(int row, int column) {
+        ensureIsValidRow(row);
+        ensureIsValidColumn(column);
+    }
+
+    @Override
     public boolean isConnect4() {
         return getAllTableLists().stream().anyMatch(TableList::isConnect4);
     }
 
-    public List<PositionPair> getPositionsOfConnect4() {
+    @Override
+    public List<CellPair> getCellsOfConnect4() {
         if(!isConnect4())
             throw new IllegalStateException("No connect 4 found");
 
         return getAllTableLists().stream()
                 .filter(TableList::isConnect4)
-                .map(TableList::getPositionPair)
-                .collect(Collectors.toList());
+                .map(TableList::getCellPair)
+                .toList();
+    }
+
+    @Override
+    public boolean isFull() {
+        return getAllColumns().stream().allMatch(Column::isFull);
     }
 
     private List<TableList> getAllTableLists() {
@@ -70,15 +85,18 @@ public class Table implements Connect4Table {
         return result;
     }
 
-    public Row getRow(int row) {
-        if(!isValidRow(row))
-            throw new IllegalArgumentException("Illegal row: " + row);
-
-        return new Row(row, this);
+    public List<Column> getAllColumns() {
+        return Column.getAll(this);
     }
 
-    private List<Column> getAllColumns() {
-        return Column.getAll(this);
+    public Column getColumn(int column) {
+        ensureIsValidColumn(column);
+        return  new Column(column, this);
+    }
+
+    private void ensureIsValidColumn(int column) {
+        if(!isValidColumn(column))
+            throw new InvalidColumnIndexException("Illegal column: " + column);
     }
 
     private List<TableList> getAllDiagonals(){
@@ -89,26 +107,29 @@ public class Table implements Connect4Table {
         return Row.getAll(this);
     }
 
+    public Row getRow(int row) {
+        ensureIsValidRow(row);
+        return new Row(row, this);
+    }
+
+    private void ensureIsValidRow(int row) {
+        if(!isValidRow(row))
+            throw new IllegalArgumentException("Illegal row: " + row);
+    }
+
+    @Override
     public void placePlayer1AtColumn(int column) {
-        placeAtColumn(column, Position.STATE.PLAYER_1);
+        placeAtColumn(column, PLAYER.PLAYER_1);
     }
 
+    @Override
     public void placePlayer2AtColumn(int column) {
-        placeAtColumn(column, Position.STATE.PLAYER_2);
+        placeAtColumn(column, PLAYER.PLAYER_2);
     }
 
-    private void placeAtColumn(int columnIndex, Position.STATE player) {
-        if(!isValidColumn(columnIndex))
-            throw new IllegalArgumentException("Illegal column: " + columnIndex);
-
+    private void placeAtColumn(int columnIndex, PLAYER player) {
+        ensureIsValidColumn(columnIndex);
         getColumn(columnIndex).put(player);
-    }
-
-    public Column getColumn(int column) {
-        if(!isValidColumn(column))
-            throw new IllegalArgumentException("Illegal column: " + column);
-
-        return  new Column(column, this);
     }
 
     public boolean isValidPosition(int i, int j){
@@ -116,24 +137,25 @@ public class Table implements Connect4Table {
     }
 
     private boolean isValidColumn(int j){
-        return j >= 0 && j < COLUMNS;
+        return j >= 0 && j < COLUMN_SIZE;
     }
 
     private boolean isValidRow(int row) {
-        return row >= 0 && row < ROWS;
+        return row >= 0 && row < ROW_SIZE;
     }
 
-    private boolean areAllRowsTheSameLength(List<List<Position.STATE>> table) {
-        return table.stream().mapToInt(List::size).distinct().count() == 1;
+    private boolean areAllColumnsSizeLEQThanROW_SIZE(List<List<PLAYER>> table) {
+        return table.stream().mapToInt(List::size).allMatch(colSize -> colSize <= ROW_SIZE) ;
     }
 
     @Override
     public String toString() {
-        String result = "";
+        StringBuilder result = new StringBuilder();
         var rows = getAllRows();
-        Collections.reverse(rows);
-        for(Row row : rows)
-            result += row.toString() + "\n";
-        return result;
+        for(int i = rows.size() - 1; i >= 0; i--){
+            result.append(rows.get(i).toString());
+            result.append("\n");
+        }
+        return result.toString();
     }
 }

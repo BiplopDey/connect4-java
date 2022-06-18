@@ -1,15 +1,15 @@
 package com.minimax.minimax.connect4.infrastructure;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.minimax.minimax.connect4.domain.ColumnFullException;
-import com.minimax.minimax.connect4.service.Connect4Game;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.skyscreamer.jsonassert.JSONAssert;
+import org.skyscreamer.jsonassert.JSONCompareMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -19,7 +19,6 @@ import static org.hamcrest.Matchers.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -31,12 +30,6 @@ class Connect4ControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
-    private Connect4Game game;
-
-    @Autowired
-    private ObjectMapper ObjectMapper;
-
     @Test
     void hello() throws Exception {
         mockMvc.perform(get("/connect4/hello"))
@@ -45,54 +38,90 @@ class Connect4ControllerTest {
     }
 
     @Test
-    void placePlayer1AtColumn2() throws Exception {
-        String requestBody = "{\"table\":[[0,0],[2,1]],\"player\":1,\"column\":2}";
-
-        var sut = mockMvcPlaceToken(requestBody)
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.table", is("[[0, 0], [2, 1]]")));
-
-        logger.info("response: " + getResponseAsString(sut));
-    }
-
-    @Test
-    void invalidTableRowSize_requestBody_throws_BadArgumentsException() throws Exception {
-        String requestBody = "{\"table\":[[0,0,0],[2,1]],\"player\":1,\"column\":1}";
-        assertBadPlaceTokenRequest(requestBody,"Invalid table row size");
-    }
-
-    @Test
-    void invalidTableColumnPositions_requestBody_throws_BadArgumentsException() throws Exception {
-        String requestBody = "{\"table\":[[2,0],[0,1],[1,1]],\"player\":1,\"column\":1}";
-        assertBadPlaceTokenRequest(requestBody,"Invalid table columns position");
-    }
-
-    @Test
-    void invalidColumn_requestBody_throws_BadArgumentsException() throws Exception {
-        String requestBody = "{\"table\":[[0,0],[2,1],[1,1]],\"player\":1,\"column\":0}";
-        assertBadPlaceTokenRequest(requestBody,"Invalid column");
-    }
-
-    @Test
-    void invalidPlayer_requestBody_throws_ColumnFullException() throws Exception {
-        String requestBody = "{\"table\":[[0,0],[2,1]],\"player\":0,\"column\":1}";
+    void invalid_player_and_throws_ColumnFullException() throws Exception {
+        String requestBody = "{\"table\":[[1],[2,1]],\"player\":0,\"column\":1,\"row_size\":2}";
         assertBadPlaceTokenRequest(requestBody, "Invalid player");
     }
 
     @Test
-    void invalidTableContent_requestBody_throws_ColumnFullException() throws Exception {
-        String requestBody = "{\"table\":[[3,0],[2,1]],\"player\":0,\"column\":1}";
-        assertBadPlaceTokenRequest(requestBody, "Invalid table content");
+    void invalid_cell_value_and_throws_ColumnFullException() throws Exception {
+        String requestBody = "{\"table\":[[0,0],[2,1]],\"player\":1,\"column\":1,\"row_size\":2}";
+        assertBadPlaceTokenRequest(requestBody, "Invalid cell value");
     }
 
     @Test
-    void columnFull_requestBody_throws_ColumnFullException() throws Exception {
-        when(game.placePlayer1AtColumn(1))
-                .thenThrow(new ColumnFullException("Column 1 full"));
-
-        String requestBody = "{\"table\":[[0,1],[2,1]],\"player\":1,\"column\":1}";
-        assertBadPlaceTokenRequest(requestBody,  "Column 1 full");
+    void invalid_rowSize_throws_BadArgumentsException() throws Exception {
+        String requestBody = "{\"table\":[[1],[2,1]],\"player\":1,\"column\":1,\"row_size\":1}";
+        assertBadPlaceTokenRequest(requestBody,
+                "All columns length should be less than row size specified");
     }
+
+    @Test
+    void columnFull_throws_ColumnFullException() throws Exception {
+        String requestBody = "{\"table\":[[1],[2,1]],\"player\":1,\"column\":2,\"row_size\":2}";
+        assertBadPlaceTokenRequest(requestBody,  "Column 1 is full");
+    }
+
+    @Test
+    void place_player1_at_column_2_and_status_is_playing() throws Exception {
+        String requestBody = "{\"table\":[[1],[2]],\"player\":1,\"column\":2,\"row_size\":2}";
+
+        var sut = mockMvcPlaceToken(requestBody)
+                .andExpect(status().isOk());
+
+        String response = getResponseAsString(sut);
+        logger.info("response: {}", getResponseAsString(sut));
+        JSONAssert.assertEquals(
+                "{\"table\":[[1],[2,1]],\"status\":\"PLAYING\"}",
+                response, JSONCompareMode.STRICT);
+    }
+
+    @Test
+    void place_player2_at_column_1_and_status_is_draw() throws Exception {
+        String requestBody = "{\"table\":[[1],[2,1]],\"player\":2,\"column\":1,\"row_size\":2}";
+
+        var sut = mockMvcPlaceToken(requestBody)
+                .andExpect(status().isOk());
+
+        String response = getResponseAsString(sut);
+        logger.info("response: {}", getResponseAsString(sut));
+        JSONAssert.assertEquals(
+                "{\"table\":[[1,2],[2,1]],\"status\":\"DRAW\"}",
+                response, JSONCompareMode.STRICT);
+    }
+
+    @Test
+    void place_player1_and_status_is_winner_connect4_in_column() throws Exception {
+        String requestBody = "{\"table\":[[1,1,1],[2,1]],\"player\":1,\"column\":1,\"row_size\":4}";
+
+        var sut = mockMvcPlaceToken(requestBody)
+                .andExpect(status().isOk());
+
+        String response = getResponseAsString(sut);
+        logger.info("response: {}", getResponseAsString(sut));
+        JSONAssert.assertEquals("{\"table\":[[1,1,1,1],[2,1]]," +
+                        "\"status\":\"WINNER\"," +
+                        "\"winner\":\"PLAYER_1\"," +
+                        "\"cells_of_connect4\":[[[0,0],[3,0]]]}",
+                response, JSONCompareMode.STRICT);
+    }
+
+    @Test
+    void place_player2_and_status_is_winner_connect4_in_row() throws Exception {
+        String requestBody = "{\"table\":[[2,1],[2,1],[],[2]],\"player\":2,\"column\":3,\"row_size\":4}";
+
+        var sut = mockMvcPlaceToken(requestBody)
+                .andExpect(status().isOk());
+
+        String response = getResponseAsString(sut);
+        logger.info("response: {}", getResponseAsString(sut));
+        JSONAssert.assertEquals("{\"table\":[[2,1],[2,1],[2],[2]]," +
+                        "\"status\":\"WINNER\"," +
+                        "\"winner\":\"PLAYER_2\"," +
+                        "\"cells_of_connect4\":[[[0,0],[0,3]]]}",
+                response, JSONCompareMode.STRICT);
+    }
+
 
     private void assertBadPlaceTokenRequest(String requestBody, String expectedExceptionMessage) throws Exception {
         mockMvcPlaceToken(requestBody)
