@@ -31,7 +31,7 @@ public class Game implements Connect4Game {
     }
 
     public STATUS getStatus() {
-        if (table.isConnect4())
+        if(table.isConnect4())
             return STATUS.WINNER;
         if(table.isFull())
             return STATUS.DRAW;
