@@ -17,10 +17,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("/connect4")
 public class Connect4Controller {
-    @RequestMapping("/hello")
-    public String hello() {
-        return "Hello World!";
-    }
 
     @PostMapping("/placeToken")
     public Connect4GameResponse placeToken(@RequestBody PlaceTokenRequest request) {

@@ -1,7 +1,5 @@
 package com.minimax.minimax.connect4.infrastructure;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -15,8 +13,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-import static org.hamcrest.Matchers.*;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -29,13 +25,6 @@ class Connect4ControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
-
-    @Test
-    void hello() throws Exception {
-        mockMvc.perform(get("/connect4/hello"))
-                .andExpect(status().isOk())
-                .andExpect(content().string("Hello World!"));
-    }
 
     @Test
     void invalid_player_and_throws_ColumnFullException() throws Exception {
