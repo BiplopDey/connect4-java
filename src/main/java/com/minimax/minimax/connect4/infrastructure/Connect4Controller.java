@@ -7,10 +7,7 @@ import com.minimax.minimax.connect4.infrastructure.dto.response.Connect4GameResp
 import com.minimax.minimax.connect4.infrastructure.dto.response.ResponseMapper;
 import com.minimax.minimax.connect4.service.Connect4Game;
 import com.minimax.minimax.connect4.service.Game;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -18,6 +15,7 @@ import java.util.Map;
 @RequestMapping("/connect4")
 public class Connect4Controller {
 
+    @CrossOrigin
     @PostMapping("/placeToken")
     public Connect4GameResponse placeToken(@RequestBody PlaceTokenRequest request) {
         try{
