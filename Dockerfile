@@ -14,6 +14,6 @@ FROM openjdk:17-jdk-alpine
 
 EXPOSE 8080
 
-COPY --from=build /app/target/*.jar /spring-petclinic.jar
+COPY --from=build /app/target/*.jar /connect4.jar
 
-CMD ["java", "-jar", "/spring-petclinic.jar"]
+CMD ["java", "-jar", "/connect4.jar"]
