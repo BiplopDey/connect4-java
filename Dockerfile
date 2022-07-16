@@ -1,4 +1,19 @@
+FROM openjdk:17-jdk-alpine as build
+
+WORKDIR /app
+
+COPY .mvn/ .mvn
+COPY mvnw pom.xml ./
+RUN ./mvnw dependency:go-offline
+COPY src ./src
+
+RUN ./mvnw package
+
+
 FROM openjdk:17-jdk-alpine
-ARG JAR_FILE=target/*.jar
-COPY ${JAR_FILE} app.jar
-ENTRYPOINT ["java","-jar","/app.jar"]
+
+EXPOSE 8080
+
+COPY --from=build /app/target/*.jar /spring-petclinic.jar
+
+CMD ["java", "-jar", "/spring-petclinic.jar"]
