@@ -1,0 +1,5 @@
+
+
+test:
+  script:
+    - echo "Compiling the code..."
