@@ -27,3 +27,10 @@ jobs:
           architecture: x64
       - name: Package the app
         run: mvn --batch-mode -DskipTests verify
+      - run: mkdir staging && cp target/*.jar staging
+      - name: Upload artifactory
+        uses: actions/upload-artifact@v4
+        with:
+          name: Package
+          path: staging
+        
