@@ -17,6 +17,7 @@ jobs:
 
   package:
     runs-on: ubuntu-latest
+    needs: test
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 17 for x64
