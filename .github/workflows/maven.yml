@@ -11,7 +11,7 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-          architecture: x64
+          cache: maven
       - name: Run test
         run: mvn --batch-mode test
 
@@ -24,7 +24,7 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-          architecture: x64
+          cache: maven
       - name: Package the app
         run: mvn --batch-mode -DskipTests verify
       - run: mkdir staging && cp target/*.jar staging
