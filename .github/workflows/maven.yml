@@ -5,6 +5,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/maven-setup
       - name: Run test
         run: mvn --batch-mode test
@@ -13,6 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: test
     steps:
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/maven-setup
       - name: Package the app
         run: mvn --batch-mode -DskipTests verify
