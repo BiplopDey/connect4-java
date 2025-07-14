@@ -1,15 +1,24 @@
 name: docker-publish
 
-on: [ push ]
+on:
+  push:
+    paths:
+      - 'pom.xml'
 
 env:
-  IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/connect4-java:latest
+  REGISTRY: ${{ secrets.DOCKERHUB_USERNAME }}
 
 jobs:
   docker:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Extract version
+        id: version
+        run: |
+          VERSION=$(grep -oP '(?<=<version>)[^<]+' pom.xml | sed -n 2p)
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
       - uses: docker/login-action@v3
         with:
@@ -20,4 +29,6 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ env.IMAGE }}
+          tags: |
+            ${{ env.REGISTRY }}/connect4-java:${{ steps.version.outputs.version }}
+            ${{ env.REGISTRY }}/connect4-java:latest
