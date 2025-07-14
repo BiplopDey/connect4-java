@@ -32,3 +32,32 @@ jobs:
           tags: |
             ${{ env.REGISTRY }}/connect4-java:${{ steps.version.outputs.version }}
             ${{ env.REGISTRY }}/connect4-java:latest
+
+      - name: Verify tags are available
+        run: |
+          set -e
+          docker pull ${{ env.REGISTRY }}/connect4-java:${{ steps.version.outputs.version }}
+          docker pull ${{ env.REGISTRY }}/connect4-java:latest
+      - name: Test /isHealthy endpoint
+        run: |
+          set -e
+          IMAGE=${{ env.REGISTRY }}/connect4-java:${{ steps.version.outputs.version }}
+          
+          echo "Arrancando contenedor en segundo plano…"
+          CID=$(docker run -d -p 8080:8080 "$IMAGE")
+          
+          # Esperar hasta 30 s a que la app responda
+          for i in {1..30}; do
+            if curl -fs http://localhost:8080/isHealthy | grep -q "Is healthy"; then
+              echo "✅ Endpoint OK"
+              docker stop "$CID"
+              exit 0
+            fi
+            echo "Esperando que la aplicación arranque… ($i/30)"
+            sleep 1
+          done
+          
+          echo "❌ La aplicación no respondió como se esperaba"
+          docker logs "$CID"
+          docker stop "$CID"
+          exit 1
