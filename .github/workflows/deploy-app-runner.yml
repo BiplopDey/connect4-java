@@ -1,0 +1,28 @@
+name: deploy-app-runner
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Deploy to App Runner
+        id: deploy
+        uses: awslabs/aws-app-runner-deploy@v1
+        with:
+          service: connect4-java
+          image: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/connect4-java:latest
+          region: ${{ secrets.AWS_REGION }}
+          access-role-arn: ${{ secrets.APP_RUNNER_ROLE_ARN }}
+          service-role-arn: ${{ secrets.APP_RUNNER_SERVICE_ROLE_ARN }}
+          wait-for-service-stability: true
+      - name: Check health endpoint
+        run: |
+          curl --fail ${{ steps.deploy.outputs.service-url }}/isHealthy
