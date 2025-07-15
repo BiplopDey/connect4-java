@@ -1,4 +1,3 @@
-# .github/actions/maven-setup/action.yml
 name: 'Reusable Maven Setup'
 runs:
   using: "composite"

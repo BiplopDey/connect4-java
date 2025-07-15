@@ -22,7 +22,7 @@ class apiControllerTest {
 
     @Test
     void health() throws Exception {
-        mockMvc.perform(get("/"))
+        mockMvc.perform(get("/isHealthy"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Is healthy"));
     }
