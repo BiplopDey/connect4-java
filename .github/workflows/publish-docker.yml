@@ -1,10 +1,7 @@
 name: docker-publish
 
 on:
-  workflow_run:
-    workflows: ["test-ci"]      # exact name in build.yml’s `name:` field
-    types: [completed]          # run after it finishes
-    branches: [main]            # (optional) filter branch
+  workflow_dispatch:
 
 env:
   REGISTRY: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -12,7 +9,7 @@ env:
 jobs:
   package:
     runs-on: ubuntu-latest
-    needs: test
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/maven-setup
