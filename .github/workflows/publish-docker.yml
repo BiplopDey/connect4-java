@@ -1,15 +1,33 @@
 name: docker-publish
 
 on:
-  push:
-    paths:
-      - 'pom.xml'
+  workflow_run:
+    workflows: ["test-ci"]      # exact name in build.yml’s `name:` field
+    types: [completed]          # run after it finishes
+    branches: [main]            # (optional) filter branch
 
 env:
   REGISTRY: ${{ secrets.DOCKERHUB_USERNAME }}
 
 jobs:
+  package:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/maven-setup
+      - name: Package the app
+        run: mvn --batch-mode verify
+      - run: mkdir staging && cp target/*.jar staging
+      - name: Upload artifactory
+        uses: actions/upload-artifact@v4
+        with:
+          name: Package
+          path: staging
+          retention-days: 1
+
   docker:
+    needs: package
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -43,21 +61,20 @@ jobs:
           set -e
           IMAGE=${{ env.REGISTRY }}/connect4-java:${{ steps.version.outputs.version }}
           
-          echo "Arrancando contenedor en segundo plano…"
+          echo "Running container…"
           CID=$(docker run -d -p 8080:8080 "$IMAGE")
           
-          # Esperar hasta 30 s a que la app responda
           for i in {1..30}; do
             if curl -fs http://localhost:8080/isHealthy | grep -q "Is healthy"; then
               echo "✅ Endpoint OK"
               docker stop "$CID"
               exit 0
             fi
-            echo "Esperando que la aplicación arranque… ($i/30)"
+            echo "Waiting the app to start… ($i/30)"
             sleep 1
           done
           
-          echo "❌ La aplicación no respondió como se esperaba"
+          echo "The app did not respond"
           docker logs "$CID"
           docker stop "$CID"
           exit 1
