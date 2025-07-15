@@ -1,6 +1,9 @@
 package com.minimax.minimax.connect4.infrastructure.dto.response;
 
-import com.minimax.minimax.connect4.domain.*;
+import com.minimax.minimax.connect4.domain.Cell;
+import com.minimax.minimax.connect4.domain.CellPair;
+import com.minimax.minimax.connect4.domain.Column;
+import com.minimax.minimax.connect4.domain.Connect4Table;
 import com.minimax.minimax.connect4.service.Connect4Game;
 
 import java.util.List;
@@ -18,7 +21,7 @@ public class ResponseMapper {
 
         var result = new Connect4GameResponse(allColumns);
         result.setStatus(game.getStatus());
-        if(game.getStatus() == Connect4Game.STATUS.WINNER)
+        if (game.getStatus() == Connect4Game.STATUS.WINNER)
             result
                     .setCellsOfConnect4(mapCellsOfConnect4(game.getCellsOfConnect4()))
                     .setWinner(game.getWinner());
@@ -40,7 +43,7 @@ public class ResponseMapper {
     }
 
     private List<Integer> mapCellToPoint(Cell cell) {
-        return List.of(cell.getRow() , cell.getColumn());
+        return List.of(cell.getRow(), cell.getColumn());
     }
 
     private List<Integer> mapColumnToListInteger(Column column) {

@@ -16,12 +16,12 @@ public class TableList {
     }
 
     public boolean isConnect4() {
-        for(int i = 0; i < list.size() - 3; i++) {
+        for (int i = 0; i < list.size() - 3; i++) {
             Cell p1 = list.get(i);
             Cell p2 = list.get(i + 1);
             Cell p3 = list.get(i + 2);
             Cell p4 = list.get(i + 3);
-            if (areConnected(p1, p2, p3, p4)){
+            if (areConnected(p1, p2, p3, p4)) {
                 cellPair = new CellPair(p1, p4);
                 return true;
             }
@@ -30,7 +30,7 @@ public class TableList {
     }
 
     public CellPair getCellPair() {
-        if(!isConnect4())
+        if (!isConnect4())
             throw new IllegalStateException("Column is not connect4");
         return cellPair;
     }
@@ -58,5 +58,10 @@ public class TableList {
         if (o == null || getClass() != o.getClass()) return false;
         TableList that = (TableList) o;
         return list.equals(that.list);
+    }
+
+    @Override
+    public int hashCode() {
+        return list.hashCode();
     }
 }

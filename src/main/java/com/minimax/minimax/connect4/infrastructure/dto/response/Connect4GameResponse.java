@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.minimax.minimax.connect4.domain.PLAYER;
 import com.minimax.minimax.connect4.service.Game;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,7 +12,7 @@ import java.util.List;
 
 @Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({ "table", "status", "winner", "cells_of_connect4"})
+@JsonPropertyOrder({"table", "status", "winner", "cells_of_connect4"})
 public class Connect4GameResponse {
     @JsonProperty("table")
     private final List<List<Integer>> table;

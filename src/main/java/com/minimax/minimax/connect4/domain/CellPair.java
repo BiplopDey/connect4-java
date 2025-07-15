@@ -16,9 +16,11 @@ public class CellPair {
     public Cell getFirst() {
         return list.get(0);
     }
+
     public Cell getSecond() {
         return list.get(1);
     }
+
     @Override
     public String toString() {
         return list.toString();
@@ -30,5 +32,10 @@ public class CellPair {
         if (o == null || getClass() != o.getClass()) return false;
         CellPair that = (CellPair) o;
         return list.equals(that.list);
+    }
+
+    @Override
+    public int hashCode() {
+        return list.hashCode();
     }
 }

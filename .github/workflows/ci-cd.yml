@@ -8,7 +8,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/maven-setup
       - name: Run PMD
-        run: mvn --batch-mode -DskipTests pmd:pmd pmd:check
+        run: mvn --batch-mode -DskipTests pmd:check
       - name: Upload PMD report
         if: ${{ always() }}
         uses: actions/upload-artifact@v4

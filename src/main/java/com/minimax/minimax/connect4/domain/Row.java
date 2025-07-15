@@ -1,7 +1,6 @@
 package com.minimax.minimax.connect4.domain;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class Row extends TableList {
@@ -9,8 +8,8 @@ public class Row extends TableList {
     public Row(int row, Table table) {
         super(
                 IntStream.range(0, table.COLUMN_SIZE)
-                .mapToObj(column -> table.getCell(row, column))
-                .toList()
+                        .mapToObj(column -> table.getCell(row, column))
+                        .toList()
         );
     }
 
