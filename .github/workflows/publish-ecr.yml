@@ -52,3 +52,32 @@ jobs:
           tags: |
             ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ steps.version.outputs.version }}
             ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
+
+      - name: Verify tags are available
+        run: |
+          set -e
+          docker pull ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ steps.version.outputs.version }}
+          docker pull ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
+
+      - name: Test /isHealthy endpoint
+        run: |
+          set -e
+          IMAGE=${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ steps.version.outputs.version }}
+          
+          echo "Running container…"
+          CID=$(docker run -d -p 8080:8080 "$IMAGE")
+          
+          for i in {1..30}; do
+            if curl -fs http://localhost:8080/isHealthy | grep -q "Is healthy"; then
+              echo "✅ Endpoint OK"
+              docker stop "$CID"
+              exit 0
+            fi
+            echo "Waiting the app to start… ($i/30)"
+            sleep 1
+          done
+          
+          echo "The app did not respond"
+          docker logs "$CID"
+          docker stop "$CID"
+          exit 1
