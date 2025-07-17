@@ -53,24 +53,26 @@ jobs:
           set -e
           docker pull ${{ env.REGISTRY }}/connect4-java:${{ steps.version.outputs.version }}
           docker pull ${{ env.REGISTRY }}/connect4-java:latest
-      - name: Test /isHealthy endpoint
+      - name: Test actuator endpoints
         run: |
           set -e
           IMAGE=${{ env.REGISTRY }}/connect4-java:${{ steps.version.outputs.version }}
-          
+
           echo "Running container…"
           CID=$(docker run -d -p 8080:8080 "$IMAGE")
-          
+
           for i in {1..30}; do
-            if curl -fs http://localhost:8080/isHealthy | grep -q "Is healthy"; then
-              echo "✅ Endpoint OK"
-              docker stop "$CID"
-              exit 0
+            if curl -fs http://localhost:8080/public/actuator/health | grep -q '"status":"UP"'; then
+              if curl -fs http://localhost:8080/public/actuator/info | grep -q "${{ steps.version.outputs.version }}"; then
+                echo "✅ Actuator endpoints OK"
+                docker stop "$CID"
+                exit 0
+              fi
             fi
             echo "Waiting the app to start… ($i/30)"
             sleep 1
           done
-          
+
           echo "The app did not respond"
           docker logs "$CID"
           docker stop "$CID"
