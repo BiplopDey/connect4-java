@@ -78,19 +78,3 @@ jobs:
           docker logs "$CID"
           docker stop "$CID"
           exit 1
-
-      - name: Deploy to App Runner
-        id: deploy-apprunner
-        uses: awslabs/amazon-app-runner-deploy@main
-        with:
-          service: app-runner-image-deploy-service # will be created or updated
-          image: ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_REPOSITORY }}:${{ steps.version.outputs.version }}
-          access-role-arn: ${{ secrets.ROLE_ARN }}  # IAM role that lets App Runner pull from your (private) ECR repo
-          region: ${{ vars.AWS_REGION }}
-          cpu: 1
-          memory: 2
-          port: 8080
-          wait-for-service-stability-seconds: 600
-
-      - name: App Runner output
-        run: echo "App runner output ${{ steps.deploy-apprunner.outputs.service-id }}"
