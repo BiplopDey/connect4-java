@@ -18,8 +18,7 @@ public class apiController {
     }
 
     private String getVersion() {
-        try (InputStream stream = getClass().getResourceAsStream(
-                "/META-INF/maven/com.minimax/minimax/pom.properties")) {
+        try (InputStream stream = getClass().getResourceAsStream("/version.properties")) {
             if (stream != null) {
                 Properties properties = new Properties();
                 properties.load(stream);
