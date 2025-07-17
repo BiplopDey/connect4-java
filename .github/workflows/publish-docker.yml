@@ -57,12 +57,13 @@ jobs:
         run: |
           set -e
           IMAGE=${{ env.REGISTRY }}/connect4-java:${{ steps.version.outputs.version }}
+          VERSION=${{ steps.version.outputs.version }}
           
           echo "Running container…"
           CID=$(docker run -d -p 8080:8080 "$IMAGE")
           
           for i in {1..30}; do
-            if curl -fs http://localhost:8080/isHealthy | grep -q "Is healthy"; then
+            if curl -fs http://localhost:8080/isHealthy | grep -q "Is healthy $VERSION"; then
               echo "✅ Endpoint OK"
               docker stop "$CID"
               exit 0
