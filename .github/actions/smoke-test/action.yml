@@ -1,0 +1,28 @@
+name: 'Smoke Test'
+inputs:
+  url:
+    description: 'Base URL to test'
+    required: true
+  version:
+    description: 'Version string to expect in /public/actuator/info'
+    required: true
+runs:
+  using: 'composite'
+  steps:
+    - shell: bash
+      run: |
+        set -e
+        URL="${{ inputs.url }}"
+        VERSION="${{ inputs.version }}"
+        for i in {1..30}; do
+          if curl -fs "$URL/public/actuator/health" | grep -q '"status":"UP"'; then
+            if curl -fs "$URL/public/actuator/info" | grep -q "$VERSION"; then
+              echo "✅ Actuator endpoints OK"
+              exit 0
+            fi
+          fi
+          echo "Waiting the service to start… ($i/30)"
+          sleep 1
+        done
+        echo "The service did not respond"
+        exit 1
