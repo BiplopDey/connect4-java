@@ -45,7 +45,7 @@ jobs:
       - name: Test actuator endpoints
         run: |
           set -e
-          SERVICE_URL=${{ steps.deploy-apprunner.outputs.service-url }}
+          SERVICE_URL=https://${{ steps.deploy-apprunner.outputs.service-url }}
           
           echo "Testing url: $SERVICE_URL/public/actuator/health" 
           
