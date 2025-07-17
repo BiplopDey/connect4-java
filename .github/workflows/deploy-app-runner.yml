@@ -36,7 +36,6 @@ jobs:
           cpu: 1
           memory: 2
           port: 8080
-          wait-for-service-stability: true
           wait-for-service-stability-seconds: 600
 
       - name: App Runner output
@@ -49,7 +48,7 @@ jobs:
           
           echo "Testing url: $SERVICE_URL/public/actuator/health" 
           
-          for i in {1..120}; do
+          for i in {1..30}; do
             if curl -fs "$SERVICE_URL/public/actuator/health" | grep -q '"status":"UP"'; then
               if curl -fs "$SERVICE_URL/public/actuator/info" | grep -q "${{ env.IMAGE_TAG }}"; then
                 echo "✅ Actuator endpoints OK"
