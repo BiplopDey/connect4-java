@@ -44,5 +44,5 @@ jobs:
       - name: Test actuator endpoints
         uses: ./.github/actions/smoke-test
         with:
-          url: ${{ steps.deploy-apprunner.outputs.service-url }}
+          url: https://${{ steps.deploy-apprunner.outputs.service-url }}
           version: ${{ env.IMAGE_TAG }}
