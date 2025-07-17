@@ -46,7 +46,9 @@ jobs:
         run: |
           set -e
           SERVICE_URL=${{ steps.deploy-apprunner.outputs.service-url }}
-
+          
+          echo "Testing url: $SERVICE_URL/public/actuator/health" 
+          
           for i in {1..120}; do
             if curl -fs "$SERVICE_URL/public/actuator/health" | grep -q '"status":"UP"'; then
               if curl -fs "$SERVICE_URL/public/actuator/info" | grep -q "${{ env.IMAGE_TAG }}"; then
