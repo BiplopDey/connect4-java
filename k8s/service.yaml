@@ -3,9 +3,12 @@ kind: Service
 metadata:
   name: connect4-java
 spec:
-  type: ClusterIP
+type: NodePort
   selector:
     app: connect4-java
   ports:
-    - port: 80
+    - port: 8080
+      nodePort: 30001
+      protocol: TCP
       targetPort: 8080
+  
