@@ -5,3 +5,26 @@
 <img src="https://upload.wikimedia.org/wikipedia/commons/a/ad/Connect_Four.gif" width="400" height="250" />
 
 
+
+## Kubernetes deployment
+
+The `k8s` directory contains manifests to deploy the application on a Kubernetes cluster. Deploy the resources with:
+
+```bash
+kubectl apply -f k8s/
+```
+
+The manifests assume the container image is available in Amazon ECR. Update
+`k8s/deployment.yaml` with your repository URI, for example
+`123456789012.dkr.ecr.us-east-1.amazonaws.com/connect4-java:latest`. The
+service is exposed on port `80`.
+
+### Deploying to Amazon EKS
+
+Once the ECR image is available, apply the manifests to your EKS cluster:
+
+```bash
+kubectl apply -f k8s/
+```
+
+A GitHub Actions workflow (`deploy-eks.yml`) is provided to automate this step.
