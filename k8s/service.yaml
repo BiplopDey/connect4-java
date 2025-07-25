@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: connect4-java
 spec:
-type: NodePort
+  type: NodePort
   selector:
     app: connect4-java
   ports:
