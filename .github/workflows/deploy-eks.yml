@@ -12,6 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       IMAGE_TAG: ${{ github.event.inputs.version }}
+      CLUSTER_NAME: ${{ vars.EKS_CLUSTER }}
     steps:
       - uses: actions/checkout@v4
 
@@ -22,16 +23,23 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ vars.AWS_REGION }}
 
+      - name: Install eksctl
+        run: |
+          curl --location "https://github.com/eksctl-io/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+          sudo mv /tmp/eksctl /usr/local/bin
+
+      - name: Create EKS cluster if needed
+        run: |
+          eksctl get cluster --name "$CLUSTER_NAME" --region ${{ vars.AWS_REGION }} || \
+          eksctl create cluster --name "$CLUSTER_NAME" --region ${{ vars.AWS_REGION }}
+
       - name: Update kubeconfig
         uses: aws-actions/eks-update-kubeconfig@v2
         with:
           cluster-name: ${{ vars.EKS_CLUSTER }}
           region: ${{ vars.AWS_REGION }}
 
-      - uses: aws-actions/amazon-ecr-login@v2
-        id: login-ecr
-
       - name: Apply manifests
         run: |
           kubectl apply -f k8s/
-          kubectl set image deployment/connect4-java connect4-java=${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
+          kubectl set image deployment/connect4-java connect4-java=docker.io/biplopdey/connect4-java:${{ env.IMAGE_TAG }}
