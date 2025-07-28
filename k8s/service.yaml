@@ -3,12 +3,11 @@ kind: Service
 metadata:
   name: connect4-java
 spec:
-  type: NodePort
+  type: LoadBalancer
   selector:
     app: connect4-java
   ports:
     - port: 8080
-      nodePort: 30001
       protocol: TCP
       targetPort: 8080
-  
+
