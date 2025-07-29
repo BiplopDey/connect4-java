@@ -29,5 +29,3 @@ jobs:
       - uses: ./.github/actions/maven-setup
       - name: Run test
         run: mvn --batch-mode test
-
-        
