@@ -1,6 +1,10 @@
 name: Pmd,Test,Sonar, build and push jar to artifactory
 run-name: running spring boot version
-on: [ push ]
+on:
+  push:
+    paths:
+      - 'src/**'
+      - 'pom.xml'
 jobs:
   pmd:
     runs-on: ubuntu-latest
