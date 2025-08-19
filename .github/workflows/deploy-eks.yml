@@ -28,12 +28,18 @@ jobs:
       - name: Smoke test locally
         shell: bash
         run: |
-          kubectl port-forward service/connect4-java 8080:8080 &
-          echo $! > /tmp/pf.pid
-          trap 'kill $(cat /tmp/pf.pid)' EXIT
+          ensure_port_forward() {
+            if [ ! -f /tmp/pf.pid ] || ! ps -p "$(cat /tmp/pf.pid)" > /dev/null 2>&1; then
+              kubectl port-forward service/connect4-java 8080:8080 >/tmp/pf.log 2>&1 &
+              echo $! > /tmp/pf.pid
+            fi
+          }
+          ensure_port_forward
+          trap 'kill $(cat /tmp/pf.pid) 2>/dev/null' EXIT
           URL="http://localhost:8080"
           VERSION="${IMAGE_TAG}"
           for i in {1..30}; do
+            ensure_port_forward
             if curl -fs "$URL/public/actuator/health" | grep -q '"status":"UP"'; then
               if curl -fs "$URL/public/actuator/info" | grep -q "$VERSION"; then
                 echo "✅ Actuator endpoints OK"
@@ -49,9 +55,9 @@ jobs:
       - name: Cleanup local cluster
         if: always()
         run: |
-          kill $(cat /tmp/pf.pid) || true
+          kill $(cat /tmp/pf.pid) 2>/dev/null || true
           kind delete cluster
-          rm -f ~/.kube/config
+          rm -f ~/.kube/config /tmp/pf.pid /tmp/pf.log
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v3
