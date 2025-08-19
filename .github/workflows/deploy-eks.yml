@@ -24,15 +24,27 @@ jobs:
           kubectl apply -f k8s/
           kubectl set image deployment/connect4-java connect4-java=docker.io/biplopdey/connect4-java:${{ env.IMAGE_TAG }}
           kubectl wait --for=condition=available --timeout=90s deployment/connect4-java
-          kubectl port-forward service/connect4-java 8080:8080 &
-          echo $! > /tmp/pf.pid
-          sleep 5
 
       - name: Smoke test locally
-        uses: ./.github/actions/smoke-test
-        with:
-          url: http://localhost:8080
-          version: ${{ env.IMAGE_TAG }}
+        shell: bash
+        run: |
+          kubectl port-forward service/connect4-java 8080:8080 &
+          echo $! > /tmp/pf.pid
+          trap 'kill $(cat /tmp/pf.pid)' EXIT
+          URL="http://localhost:8080"
+          VERSION="${IMAGE_TAG}"
+          for i in {1..30}; do
+            if curl -fs "$URL/public/actuator/health" | grep -q '"status":"UP"'; then
+              if curl -fs "$URL/public/actuator/info" | grep -q "$VERSION"; then
+                echo "✅ Actuator endpoints OK"
+                exit 0
+              fi
+            fi
+            echo "Waiting the service to start… ($i/30)"
+            sleep 1
+          done
+          echo "The service did not respond"
+          exit 1
 
       - name: Cleanup local cluster
         if: always()
