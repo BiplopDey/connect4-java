@@ -1,6 +1,14 @@
 name: Pmd,Test,Sonar, build and push jar to artifactory
 run-name: running spring boot version
-on: [ push ]
+on:
+  push:
+    paths:
+      - 'src/**'
+      - 'pom.xml'
+  pull_request:
+    paths:
+      - 'src/**'
+      - 'pom.xml'
 jobs:
   pmd:
     runs-on: ubuntu-latest
@@ -25,5 +33,3 @@ jobs:
       - uses: ./.github/actions/maven-setup
       - name: Run test
         run: mvn --batch-mode test
-
-        
