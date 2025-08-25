@@ -43,7 +43,7 @@ jobs:
       - name: Build & Analyze (fail on Quality Gate)
         run: |
           mvn -B -V -DskipTests=false verify \
-            org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+            sonar:sonar \
             -Dsonar.organization="${SONAR_ORG}" \
             -Dsonar.projectKey="${SONAR_PROJECT_KEY}" \
             -Dsonar.host.url="${SONAR_HOST_URL}" \
