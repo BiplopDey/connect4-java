@@ -58,7 +58,7 @@ public class Diagonal {
     }
 
     private List<Cell> getInitialPositiveSlopeCells() {
-        var reverseOrderColumns = getFirsColumnCells();
+        var reverseOrderColumns = getFirstColumnCells();
         Collections.reverse(reverseOrderColumns);
         List<Cell> result = new ArrayList<>(reverseOrderColumns);
         int firstRow = 0;
@@ -74,20 +74,20 @@ public class Diagonal {
     }
 
     private List<Cell> getInitialNegativeSlopeCells() {
-        List<Cell> result = new ArrayList<>(getFirsColumnCells());
-        int lastRow = table.ROW_SIZE - 1;
+        List<Cell> result = new ArrayList<>(getFirstColumnCells());
+        int lastRow = table.getRowSize() - 1;
         result.addAll(getRowCellsExcludingFirstElement(lastRow));
 
         return result;
     }
 
-    private List<Cell> getFirsColumnCells() {
-        return IntStream.range(0, table.ROW_SIZE)
+    private List<Cell> getFirstColumnCells() {
+        return IntStream.range(0, table.getRowSize())
                 .mapToObj(row -> table.getCell(row, 0))
                 .collect(Collectors.toList());
     }
 
     private List<Cell> getRowCellsExcludingFirstElement(int row) {
-        return table.getRow(row).getCells().subList(1, table.COLUMN_SIZE);
+        return table.getRow(row).getCells().subList(1, table.getColumnSize());
     }
 }

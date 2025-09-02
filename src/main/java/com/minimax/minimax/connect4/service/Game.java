@@ -2,7 +2,7 @@ package com.minimax.minimax.connect4.service;
 
 import com.minimax.minimax.connect4.domain.CellPair;
 import com.minimax.minimax.connect4.domain.Connect4Table;
-import com.minimax.minimax.connect4.domain.PLAYER;
+import com.minimax.minimax.connect4.domain.Player;
 import lombok.Getter;
 
 import java.util.List;
@@ -15,8 +15,8 @@ public class Game implements Connect4Game {
         this.table = table;
     }
 
-    public void place(PLAYER player, int column) {
-        if(player == PLAYER.PLAYER_1){
+    public void place(Player player, int column) {
+        if(player == Player.PLAYER_1){
             table.placePlayer1AtColumn(column-1);
             return;
         }
@@ -24,10 +24,10 @@ public class Game implements Connect4Game {
     }
 
     @Override
-    public PLAYER getWinner() {
+    public Player getWinner() {
         var winnerCells = table.getCellsOfConnect4();
         var cell = winnerCells.get(0).getFirst();
-        return cell.isPlayer1() ? PLAYER.PLAYER_1 : PLAYER.PLAYER_2;
+        return cell.isPlayer1() ? Player.PLAYER_1 : Player.PLAYER_2;
     }
 
     public STATUS getStatus() {

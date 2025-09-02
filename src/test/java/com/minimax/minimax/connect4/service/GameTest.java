@@ -21,7 +21,7 @@ class GameTest {
 
     @Test
     void column_is_invalid_and_throw_InvalidColumnIndexException() {
-        game.place(PLAYER.PLAYER_1, 1);
+        game.place(Player.PLAYER_1, 1);
 
         verify(table).placePlayer1AtColumn(0);
     }
@@ -32,7 +32,7 @@ class GameTest {
         when(cell.isPlayer1()).thenReturn(true);
         when(table.getCellsOfConnect4()).thenReturn(List.of(new CellPair(cell, cell)));
 
-        assertEquals(PLAYER.PLAYER_1, game.getWinner());
+        assertEquals(Player.PLAYER_1, game.getWinner());
     }
 
     @Test
@@ -40,7 +40,7 @@ class GameTest {
         Cell cell = mock(Cell.class);
         when(cell.isPlayer1()).thenReturn(false);
         when(table.getCellsOfConnect4()).thenReturn(List.of(new CellPair(cell, cell)));
-        assertEquals(PLAYER.PLAYER_2, game.getWinner());
+        assertEquals(Player.PLAYER_2, game.getWinner());
     }
 
     @Test

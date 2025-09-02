@@ -2,7 +2,7 @@ package com.minimax.minimax.connect4.infrastructure.dto.response;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.minimax.minimax.connect4.domain.CellPair;
-import com.minimax.minimax.connect4.domain.PLAYER;
+import com.minimax.minimax.connect4.domain.Player;
 import com.minimax.minimax.connect4.domain.Table;
 import com.minimax.minimax.connect4.service.Connect4Game;
 import org.junit.jupiter.api.BeforeEach;
@@ -61,24 +61,24 @@ class ResponseMapperTest {
     @Test
     void getCellsOfConnect4_and_player_1_winner(){
         when(game.getStatus()).thenReturn(Connect4Game.STATUS.WINNER);
-        when(game.getWinner()).thenReturn(PLAYER.PLAYER_1);
+        when(game.getWinner()).thenReturn(Player.PLAYER_1);
 
         var sut = requestMapper.mapConnect4Game(game);
 
         assertEquals("[[[0, 0], [0, 1]], [[1, 0], [1, 1]]]",
                 sut.getCellsOfConnect4().toString());
-        assertEquals(PLAYER.PLAYER_1, sut.getWinner());
+        assertEquals(Player.PLAYER_1, sut.getWinner());
         verify(game).getCellsOfConnect4();
     }
 
     @Test
     void getCellsOfConnect4_and_winner_and_player_2_winner(){
         when(game.getStatus()).thenReturn(Connect4Game.STATUS.WINNER);
-        when(game.getWinner()).thenReturn(PLAYER.PLAYER_2);
+        when(game.getWinner()).thenReturn(Player.PLAYER_2);
 
         var sut = requestMapper.mapConnect4Game(game);
 
-        assertEquals(PLAYER.PLAYER_2, sut.getWinner());
+        assertEquals(Player.PLAYER_2, sut.getWinner());
         verify(game).getCellsOfConnect4();
     }
 
@@ -110,7 +110,7 @@ class ResponseMapperTest {
     @Test
     void mapToJson_gameStatusWINNER() throws Exception {
         when(game.getStatus()).thenReturn(Connect4Game.STATUS.WINNER);
-        when(game.getWinner()).thenReturn(PLAYER.PLAYER_2);
+        when(game.getWinner()).thenReturn(Player.PLAYER_2);
         var response = requestMapper.mapConnect4Game(game);
 
         var sut = objectMapper.writeValueAsString(response);

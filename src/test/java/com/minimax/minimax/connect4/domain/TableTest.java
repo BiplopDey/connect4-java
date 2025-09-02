@@ -10,8 +10,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class TableTest {
     Table table6x7, table2x2, table;
-    private final PLAYER PLAYER_1 = PLAYER.PLAYER_1;
-    private final PLAYER PLAYER_2 = PLAYER.PLAYER_2;
+    private final Player PLAYER_1 = Player.PLAYER_1;
+    private final Player PLAYER_2 = Player.PLAYER_2;
 
     @BeforeEach
     void setUp() {
@@ -21,8 +21,8 @@ class TableTest {
 
     @Test
     void set_rowAndColumn(){
-        assertEquals(6, table6x7.ROW_SIZE);
-        assertEquals(7, table6x7.COLUMN_SIZE);
+        assertEquals(6, table6x7.getRowSize());
+        assertEquals(7, table6x7.getColumnSize());
     }
 
     @Test
@@ -34,8 +34,8 @@ class TableTest {
 
         var sut = new Table(2, table);
 
-        assertEquals(2, sut.ROW_SIZE);
-        assertEquals(3, sut.COLUMN_SIZE);
+        assertEquals(2, sut.getRowSize());
+        assertEquals(3, sut.getColumnSize());
         assertTrue(sut.getCell(0, 0).isPlayer1());
         assertTrue(sut.getCell(1, 0).isEmpty());
         assertTrue(sut.getCell(0, 1).isPlayer1());
@@ -53,8 +53,8 @@ class TableTest {
 
     @Test
     void table_is_initialized_with_empty(){
-        for(int i = 0; i < table6x7.ROW_SIZE; i++)
-            for(int j = 0; j < table6x7.COLUMN_SIZE; j++)
+        for(int i = 0; i < table6x7.getRowSize(); i++)
+            for(int j = 0; j < table6x7.getColumnSize(); j++)
                 assertTrue(table6x7.getCell(i,j).isEmpty());
     }
 
@@ -253,9 +253,9 @@ class TableTest {
         assertEquals(positionPair2, table.getCellsOfConnect4().get(1));
     }
 
-    private void putInColumn(Table table, int columnIndex, PLAYER... players) {
+    private void putInColumn(Table table, int columnIndex, Player... players) {
         var column = table.getColumn(columnIndex);
-        for (PLAYER player: players)
+        for (Player player: players)
             column.put(player);
     }
 
@@ -267,7 +267,7 @@ class TableTest {
                 table.placePlayer2AtColumn(i);
         }
     }
-    private void putRow(Table table, PLAYER... players) {
+    private void putRow(Table table, Player... players) {
         for (int i = 0; i < players.length; i++){
             if (players[i] == PLAYER_1)
                 table.placePlayer1AtColumn(i);

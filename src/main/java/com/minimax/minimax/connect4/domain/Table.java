@@ -1,21 +1,19 @@
 package com.minimax.minimax.connect4.domain;
 
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @EqualsAndHashCode
 public class Table implements Connect4Table {
-    public final int ROW_SIZE;
-    public final int COLUMN_SIZE;
-    @Getter
+    private final int rowSize;
+    private final int columnSize;
     private char[][] table;
 
-    public Table(int rowSize, List<List<PLAYER>> table) {
-        this.COLUMN_SIZE = table.size();
-        this.ROW_SIZE = rowSize;
+    public Table(int rowSize, List<List<Player>> table) {
+        this.columnSize = table.size();
+        this.rowSize = rowSize;
         if (!areAllColumnsSizeLEQThanROW_SIZE(table))
             throw new IllegalArgumentException("All columns length should be less than row size specified");
 
@@ -23,21 +21,21 @@ public class Table implements Connect4Table {
     }
 
     public Table(int rowSize, int columnSize) {
-        ROW_SIZE = rowSize;
-        COLUMN_SIZE = columnSize;
+        this.rowSize = rowSize;
+        this.columnSize = columnSize;
         initializeTable();
     }
 
     private void initializeTable() {
-        table = new char[ROW_SIZE][COLUMN_SIZE];
-        for (int i = 0; i < ROW_SIZE; i++)
-            for (int j = 0; j < COLUMN_SIZE; j++)
+        table = new char[rowSize][columnSize];
+        for (int i = 0; i < rowSize; i++)
+            for (int j = 0; j < columnSize; j++)
                 table[i][j] = Cell.EMPTY;
     }
 
-    private void buildTable(List<List<PLAYER>> table) {
+    private void buildTable(List<List<Player>> table) {
         initializeTable();
-        for (int columnIndex = 0; columnIndex < COLUMN_SIZE; columnIndex++)
+        for (int columnIndex = 0; columnIndex < columnSize; columnIndex++)
             for (int row = 0; row < table.get(columnIndex).size(); row++)
                 this.table[row][columnIndex] = table.get(columnIndex).get(row).getValue();
     }
@@ -117,15 +115,15 @@ public class Table implements Connect4Table {
 
     @Override
     public void placePlayer1AtColumn(int column) {
-        placeAtColumn(column, PLAYER.PLAYER_1);
+        placeAtColumn(column, Player.PLAYER_1);
     }
 
     @Override
     public void placePlayer2AtColumn(int column) {
-        placeAtColumn(column, PLAYER.PLAYER_2);
+        placeAtColumn(column, Player.PLAYER_2);
     }
 
-    private void placeAtColumn(int columnIndex, PLAYER player) {
+    private void placeAtColumn(int columnIndex, Player player) {
         ensureIsValidColumn(columnIndex);
         getColumn(columnIndex).put(player);
     }
@@ -135,15 +133,15 @@ public class Table implements Connect4Table {
     }
 
     private boolean isValidColumn(int j) {
-        return j >= 0 && j < COLUMN_SIZE;
+        return j >= 0 && j < columnSize;
     }
 
     private boolean isValidRow(int row) {
-        return row >= 0 && row < ROW_SIZE;
+        return row >= 0 && row < rowSize;
     }
 
-    private boolean areAllColumnsSizeLEQThanROW_SIZE(List<List<PLAYER>> table) {
-        return table.stream().mapToInt(List::size).allMatch(colSize -> colSize <= ROW_SIZE);
+    private boolean areAllColumnsSizeLEQThanROW_SIZE(List<List<Player>> table) {
+        return table.stream().mapToInt(List::size).allMatch(colSize -> colSize <= rowSize);
     }
 
     @Override
@@ -155,5 +153,30 @@ public class Table implements Connect4Table {
             result.append("\n");
         }
         return result.toString();
+    }
+
+    public int getRowSize() {
+        return rowSize;
+    }
+
+    public int getColumnSize() {
+        return columnSize;
+    }
+
+    @Override
+    public char[][] getTable() {
+        char[][] copy = new char[rowSize][columnSize];
+        for (int i = 0; i < rowSize; i++) {
+            System.arraycopy(table[i], 0, copy[i], 0, columnSize);
+        }
+        return copy;
+    }
+
+    char getAt(int row, int column) {
+        return table[row][column];
+    }
+
+    void setAt(int row, int column, char value) {
+        table[row][column] = value;
     }
 }

@@ -28,11 +28,11 @@ public class Cell {
     }
 
     public void placePlayer1(){
-        place(PLAYER.PLAYER_1);
+        place(Player.PLAYER_1);
     }
 
     public void placePlayer2() {
-        place(PLAYER.PLAYER_2);
+        place(Player.PLAYER_2);
     }
 
     public boolean isEmpty(){
@@ -40,21 +40,21 @@ public class Cell {
     }
 
     public boolean isPlayer1(){
-        return getValue() == PLAYER.PLAYER_1.getValue();
+        return getValue() == Player.PLAYER_1.getValue();
     }
 
     public boolean isPlayer2(){
-        return getValue() == PLAYER.PLAYER_2.getValue();
+        return getValue() == Player.PLAYER_2.getValue();
     }
 
     protected char getValue(){
         ensureRowAndColumnAreNotNull();
-        return table.getTable()[row][column];
+        return table.getAt(row, column);
     }
 
-    protected void place(PLAYER player) {
+    protected void place(Player player) {
         ensureRowAndColumnAreNotNull();
-        table.getTable()[row][column] = player.getValue();
+        table.setAt(row, column, player.getValue());
     }
 
     @Override
@@ -62,7 +62,7 @@ public class Cell {
         return "Position(" + row + "," + column + ")";
     }
 
-    public void ensureRowAndColumnAreNotNull(){
+    private void ensureRowAndColumnAreNotNull(){
         if(row == null || column == null)
             throw new IllegalStateException("Position cannot be null");
     }
