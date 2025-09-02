@@ -1,5 +1,6 @@
 package com.minimax.minimax.connect4.infrastructure;
 
+import com.minimax.minimax.connect4.domain.ColumnFullException;
 import com.minimax.minimax.connect4.infrastructure.dto.request.PlaceTokenRequest;
 import com.minimax.minimax.connect4.infrastructure.dto.request.RequestMapper;
 import com.minimax.minimax.connect4.infrastructure.dto.response.Connect4GameResponse;
@@ -20,8 +21,8 @@ public class Connect4Controller {
             Connect4Game game = new Game(mapper.mapToConnect4Table(request));
             game.place(mapper.getPlayer(request.player), request.column);
             return new ResponseMapper().mapConnect4Game(game);
-        } catch (Exception e) {
-            throw new BadArgumentsException(e.getMessage());
+        } catch (IllegalArgumentException | ColumnFullException e) {
+            throw new BadArgumentsException(e.getMessage(), e);
         }
     }
 

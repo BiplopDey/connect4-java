@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class ResponseMapper {
-    private final int PLAYER_1_CELL = 1;
-    private final int PLAYER_2_CELL = 2;
+    private static final int PLAYER_1_CELL = 1;
+    private static final int PLAYER_2_CELL = 2;
 
     public Connect4GameResponse mapConnect4Game(Connect4Game game) {
         Connect4Table table = game.getTable();

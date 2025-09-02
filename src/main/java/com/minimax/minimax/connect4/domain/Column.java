@@ -8,7 +8,7 @@ public class Column extends TableList {
     private final int column;
     private final Table table;
     public Column(int column, Table table){
-        super(IntStream.range(0, table.ROW_SIZE)
+        super(IntStream.range(0, table.getRowSize())
                 .mapToObj(row -> table.getCell(row, column))
                 .filter(cell -> !cell.isEmpty())
                 .collect(Collectors.toList()));
@@ -17,10 +17,10 @@ public class Column extends TableList {
     }
 
     public boolean isFull() {
-        return size() == table.ROW_SIZE;
+        return size() == table.getRowSize();
     }
 
-    public void put(PLAYER player) {
+    public void put(Player player) {
         if(isFull())
             throw new ColumnFullException("Column "+ column +" is full");
 
@@ -30,7 +30,7 @@ public class Column extends TableList {
     }
 
     public static List<Column> getAll(Table table) {
-        return IntStream.range(0, table.COLUMN_SIZE)
+        return IntStream.range(0, table.getColumnSize())
                 .mapToObj(column -> new Column(column, table))
                 .collect(Collectors.toList());
     }

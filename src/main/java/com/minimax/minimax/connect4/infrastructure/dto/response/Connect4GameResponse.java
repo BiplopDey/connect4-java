@@ -3,7 +3,7 @@ package com.minimax.minimax.connect4.infrastructure.dto.response;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.minimax.minimax.connect4.domain.PLAYER;
+import com.minimax.minimax.connect4.domain.Player;
 import com.minimax.minimax.connect4.service.Game;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,7 +20,7 @@ public class Connect4GameResponse {
     @JsonProperty("status")
     private Game.STATUS status;
     @JsonProperty("winner")
-    private PLAYER winner;
+    private Player winner;
     @JsonProperty("cells_of_connect4")
     private List<List<List<Integer>>> cellsOfConnect4;
 
@@ -33,7 +33,7 @@ public class Connect4GameResponse {
         return this;
     }
 
-    public Connect4GameResponse setWinner(PLAYER winner) {
+    public Connect4GameResponse setWinner(Player winner) {
         this.winner = winner;
         return this;
     }

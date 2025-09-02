@@ -7,14 +7,14 @@ public class Row extends TableList {
 
     public Row(int row, Table table) {
         super(
-                IntStream.range(0, table.COLUMN_SIZE)
+                IntStream.range(0, table.getColumnSize())
                         .mapToObj(column -> table.getCell(row, column))
                         .toList()
         );
     }
 
     public static List<Row> getAll(Table table) {
-        return IntStream.range(0, table.ROW_SIZE)
+        return IntStream.range(0, table.getRowSize())
                 .mapToObj(row -> new Row(row, table))
                 .toList();
     }

@@ -11,8 +11,8 @@ class ColumnTest {
     private Column column_size_6;
     private Table table2x2;
     private Table table6x7;
-    private final PLAYER PLAYER_1 = PLAYER.PLAYER_1;
-    private final PLAYER PLAYER_2 = PLAYER.PLAYER_2;
+    private final Player PLAYER_1 = Player.PLAYER_1;
+    private final Player PLAYER_2 = Player.PLAYER_2;
 
     @BeforeEach
     void setUp() {
@@ -82,8 +82,8 @@ class ColumnTest {
         assertEquals("Column is not connect4", sut.getMessage());
     }
 
-    private void put(Column column, PLAYER... players) {
-        for (PLAYER player: players)
+    private void put(Column column, Player... players) {
+        for (Player player: players)
             column.put(player);
     }
 

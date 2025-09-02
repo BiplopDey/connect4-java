@@ -36,7 +36,7 @@ public class TableList {
     }
 
     public List<Cell> getCells() {
-        return list;
+        return java.util.Collections.unmodifiableList(list);
     }
 
     @Override
