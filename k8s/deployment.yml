@@ -16,5 +16,6 @@ spec:
       containers:
         - name: connect4-java
           image: biplopdey/connect4-java:latest
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080
