@@ -36,8 +36,14 @@ jobs:
             sleep 1
           done
 
-          # Find the target pod and start port-forward in background
-          POD_NAME=$(kubectl get pods -l app=connect4-java -o jsonpath='{.items[0].metadata.name}')
+          # Find a running target pod and start port-forward in background
+          POD_NAME=$(kubectl get pods -l app=connect4-java --field-selector=status.phase=Running -o jsonpath='{.items[0].metadata.name}')
+          if [ -z "$POD_NAME" ]; then
+            echo "No running pod found for connect4-java"
+            kubectl get pods -l app=connect4-java
+            exit 1
+          fi
+
           kubectl port-forward pod/$POD_NAME 8080:8080 >/tmp/pf.log 2>&1 &
           echo $! > /tmp/pf.pid
 
