@@ -36,8 +36,9 @@ jobs:
             sleep 1
           done
 
-          # Start port-forward in background and capture PID
-          kubectl port-forward service/connect4-java 8080:8080 >/tmp/pf.log 2>&1 &
+          # Find the target pod and start port-forward in background
+          POD_NAME=$(kubectl get pods -l app=connect4-java -o jsonpath='{.items[0].metadata.name}')
+          kubectl port-forward pod/$POD_NAME 8080:8080 >/tmp/pf.log 2>&1 &
           echo $! > /tmp/pf.pid
 
           # Wait until port-forward reports it's listening or the process exits
