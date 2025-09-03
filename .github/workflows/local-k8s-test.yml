@@ -1,6 +1,9 @@
 name: local-k8s-test
 
 on:
+  push:
+    branches:
+      - '**'
   workflow_dispatch:
     inputs:
       version:
@@ -11,7 +14,7 @@ jobs:
   local-test:
     runs-on: ubuntu-latest
     env:
-      IMAGE_TAG: ${{ github.event.inputs.version }}
+      IMAGE_TAG: ${{ github.event.inputs.version || 'latest' }}
     steps:
       - uses: actions/checkout@v4
 
