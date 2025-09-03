@@ -6,7 +6,7 @@ A small Spring Boot service that applies Connect 4 rules to a given board, place
 - Framework: Spring Boot 2.7
 - Build: Maven
 - Container: Docker
-- Orchestration: Kubernetes (manifests in `k8s/`)
+- Orchestration: Kubernetes via Helm (chart in `helm/connect4-java`)
 - CI/CD: GitHub Actions (Docker Hub & AWS ECR publishing; EKS/App Runner deploy; SonarQube; local kind smoke test)
 
 ## Quick Start
@@ -132,23 +132,20 @@ curl -fs http://localhost:8080/public/actuator/health
 curl -fs http://localhost:8080/public/actuator/info
 ```
 
-## Kubernetes
+## Kubernetes (Helm)
 
-Manifests are in `k8s/`:
-- Deployment: `k8s/deployment.yml` (container port 8080; readiness/liveness use actuator)
-- Service: `k8s/service.yml` (`LoadBalancer` on port 8080)
-
-Apply manifests and port-forward for local testing:
+Deploy using the bundled Helm chart:
 ```
-kubectl apply -f k8s/
+helm upgrade --install connect4-java ./helm/connect4-java \
+  --set image.repository=docker.io/biplopdey/connect4-java,image.tag=<TAG>
 kubectl wait --for=condition=available --timeout=90s deployment/connect4-java
 kubectl port-forward service/connect4-java 8080:8080
 ```
 
-By default, the deployment references `docker.io/biplopdey/connect4-java:latest`. You can point it to another image tag at runtime:
-```
-kubectl set image deployment/connect4-java connect4-java=docker.io/biplopdey/connect4-java:<TAG>
-```
+Notes
+- Default image is `docker.io/biplopdey/connect4-java:latest` (override with `--set image.tag=<TAG>`).
+- Service type defaults to `LoadBalancer` and exposes port `8080`.
+- Legacy raw manifests still exist under `k8s/` but Helm is the recommended path.
 
 ## CI/CD Workflows (GitHub Actions)
 
@@ -167,13 +164,13 @@ Pipelines
   - Uses OIDC to assume role; pushes `<pom.version>` and `latest`
   - Requires vars: `AWS_REGION`, `ECR_REPOSITORY`, `AWS_ECR_ROLE_ARN`
 - Deploy to EKS: `.github/workflows/deploy-eks.yml` (manual)
-  - Applies `k8s/` and updates image to `docker.io/biplopdey/connect4-java:<version>`
+  - Uses Helm to deploy/update the release with image tag `<version>`
   - Requires vars: `AWS_REGION`, `EKS_CLUSTER`; secrets: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`
 - Deploy to App Runner: `.github/workflows/deploy-app-runner.yml` (manual)
   - Deploys ECR image to App Runner
   - Requires vars: `AWS_REGION`, `ECR_REPOSITORY`; secrets: `ROLE_ARN`
 - Local k8s smoke test: `.github/workflows/local-k8s-test.yml` (on every push, or manual with `version`)
-  - Creates a kind cluster, applies `k8s/`, port-forwards, and runs `smoke-test-lite`
+  - Creates a kind cluster, installs via Helm, port-forwards, and runs `smoke-test-lite`
 
 Versioning
 - The pipelines extract the application version from `pom.xml` (the project `<version>`), and use it as the image tag.
@@ -184,7 +181,8 @@ Versioning
 .
 ├─ src/main/java/com/minimax/minimax/...     # Spring Boot app and Connect4 domain
 ├─ src/main/resources/application.yml         # Actuator base-path and info
-├─ k8s/deployment.yml, k8s/service.yml       # K8s manifests
+├─ helm/connect4-java                         # Helm chart (preferred)
+├─ k8s/deployment.yml, k8s/service.yml       # Legacy K8s manifests
 ├─ Dockerfile                                # Multi-stage build (Maven -> JRE)
 ├─ .github/actions/*                         # Composite actions
 └─ .github/workflows/*                       # CI/CD pipelines

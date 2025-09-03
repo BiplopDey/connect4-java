@@ -39,11 +39,14 @@ jobs:
             --name "$CLUSTER_NAME" \
             --region ${{ vars.AWS_REGION }}
 
-      - name: Apply manifests
-        run: |
-          kubectl apply -f k8s/
-          kubectl set image deployment/connect4-java connect4-java=docker.io/biplopdey/connect4-java:${{ env.IMAGE_TAG }}
+      - name: Install Helm
+        uses: azure/setup-helm@v4
 
+      - name: Deploy via Helm
+        run: |
+          helm upgrade --install connect4-java ./helm/connect4-java \
+            --set image.repository=docker.io/biplopdey/connect4-java,image.tag=${{ env.IMAGE_TAG }}
+          
       - name: Wait for service URL
         id: service
         run: |

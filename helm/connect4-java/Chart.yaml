@@ -1,0 +1,7 @@
+apiVersion: v2
+name: connect4-java
+description: A Helm chart for deploying the Connect4 Java Spring Boot service
+type: application
+version: 0.1.0
+appVersion: "0.0.0"
+
