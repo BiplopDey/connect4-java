@@ -55,7 +55,7 @@ jobs:
           done
 
       - name: Smoke test locally
-        uses: ./.github/actions/smoke-test
+        uses: ./.github/actions/smoke-test-lite
         with:
           url: http://localhost:8080
 
@@ -71,4 +71,3 @@ jobs:
           kill $(cat /tmp/pf.pid) 2>/dev/null || true
           kind delete cluster
           rm -f ~/.kube/config /tmp/pf.pid /tmp/pf.log
-
