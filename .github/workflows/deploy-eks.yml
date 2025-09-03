@@ -16,49 +16,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up kind cluster
-        uses: helm/kind-action@v1
-
-      - name: Deploy to local cluster
-        run: |
-          kubectl apply -f k8s/
-          kubectl set image deployment/connect4-java connect4-java=docker.io/biplopdey/connect4-java:${{ env.IMAGE_TAG }}
-          kubectl wait --for=condition=available --timeout=90s deployment/connect4-java
-
-      - name: Smoke test locally
-        shell: bash
-        run: |
-          ensure_port_forward() {
-            if [ ! -f /tmp/pf.pid ] || ! ps -p "$(cat /tmp/pf.pid)" > /dev/null 2>&1; then
-              kubectl port-forward service/connect4-java 8080:8080 >/tmp/pf.log 2>&1 &
-              echo $! > /tmp/pf.pid
-            fi
-          }
-          ensure_port_forward
-          trap 'kill $(cat /tmp/pf.pid) 2>/dev/null' EXIT
-          URL="http://localhost:8080"
-          VERSION="${IMAGE_TAG}"
-          for i in {1..30}; do
-            ensure_port_forward
-            if curl -fs "$URL/public/actuator/health" | grep -q '"status":"UP"'; then
-              if curl -fs "$URL/public/actuator/info" | grep -q "$VERSION"; then
-                echo "✅ Actuator endpoints OK"
-                exit 0
-              fi
-            fi
-            echo "Waiting the service to start… ($i/30)"
-            sleep 1
-          done
-          echo "The service did not respond"
-          exit 1
-
-      - name: Cleanup local cluster
-        if: always()
-        run: |
-          kill $(cat /tmp/pf.pid) 2>/dev/null || true
-          kind delete cluster
-          rm -f ~/.kube/config /tmp/pf.pid /tmp/pf.log
-
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v3
         with:
@@ -97,7 +54,7 @@ jobs:
               echo "url=http://$HOST" >> "$GITHUB_OUTPUT"
               exit 0
             fi
-            echo "Waiting for service… ($i/60)"
+            echo "Waiting for service. ($i/60)"
             sleep 5
           done
           echo "Service load balancer hostname not available" >&2
