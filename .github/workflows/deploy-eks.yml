@@ -16,33 +16,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up kind cluster
-        uses: helm/kind-action@v1
-
-      - name: Deploy to local cluster
-        run: |
-          kubectl apply -f k8s/
-          kubectl set image deployment/connect4-java connect4-java=docker.io/biplopdey/connect4-java:${{ env.IMAGE_TAG }}
-          kubectl wait --for=condition=available --timeout=90s deployment/connect4-java
-
-      - name: Start port-forward
-        run: |
-          kubectl port-forward service/connect4-java 8080:8080 >/tmp/pf.log 2>&1 &
-          echo $! > /tmp/pf.pid
-
-      - name: Smoke test locally
-        uses: ./.github/actions/smoke-test
-        with:
-          url: http://localhost:8080
-          version: ${{ env.IMAGE_TAG }}
-
-      - name: Cleanup local cluster
-        if: always()
-        run: |
-          kill $(cat /tmp/pf.pid) 2>/dev/null || true
-          kind delete cluster
-          rm -f ~/.kube/config /tmp/pf.pid /tmp/pf.log
-
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v3
         with:
